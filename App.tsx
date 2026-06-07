@@ -6,23 +6,34 @@ import WordListScreen from './src/screens/WordListScreen';
 import AddWordScreen from './src/screens/AddWordScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import { Word } from './src/types';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 
-const mockWords: Word[] = [
-    {id: "1", word: "hva", translation: "what" },
-    {id: "2", word: "gjør", translation: "do" },
-    {id: "3", word: "du", translation: "you" },
-    {id: "4", word: "jeg", translation: "I" },
-    {id: "5", word: "lager", translation: "make" },
-    {id: "6", word: "en gave", translation: "a present" },
-]
+let staringWords: Word[] = []
 
+const storeData = async (value: Word[]) => {
+  try {
+    const jsonValue = JSON.stringify(value)
+    await AsyncStorage.setItem('words', jsonValue)
+  } catch (e) {
+    console.log(e)
+  }
+}
 
+const getData = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('words')
+    return jsonValue != null ? JSON.parse(jsonValue) : [] 
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 export default function App() {
-  const [words, setWords] = useState<Word[]>(mockWords)
+  const [words, setWords] = useState<Word[]>(staringWords)
+  const hasLoaded = useRef(false)
 
   const handleAdd = (word: Word) => {
     setWords((prev) => [...prev, word])
@@ -31,6 +42,21 @@ export default function App() {
   const handleDelete = (id: string) => {
     setWords((prev) => prev.filter((word) => word.id !== id))
   }
+
+  useEffect(() => {
+    getData().then((result) => {
+      setWords(result)
+    })
+    hasLoaded.current = true
+  }, [])
+
+  useEffect(() => {
+    if (!hasLoaded.current) {
+      return
+    }
+    storeData(staringWords)
+  }, [staringWords])
+
   return (
     <NavigationContainer>
       <Tab.Navigator>

@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
 import { Word } from '../types'
-import { useState } from 'react'
 
 type Props = {
     words: Word[]
