@@ -6,8 +6,19 @@ type Props = {
     words: Word[]
 }
 
+// function shuffle<T>(array: T[]): T[] {
+//     return[...array].sort(() => Math.random() - 0.5)
+// }
+// Apply Fisher-Yates implementation instead
 function shuffle<T>(array: T[]): T[] {
-    return[...array].sort(() => Math.random() - 0.5)
+    const result = [...array]
+    for(let i = result.length - 1; i > 0; i--) {
+        const randomIndex = Math.floor(Math.random() * (i + 1))
+        const temp = result[i]
+        result[i] = result[randomIndex]
+        result[randomIndex] = temp
+    }
+    return result
 }
 
 export default function QuizScreen({words}: Props) {
@@ -15,7 +26,7 @@ export default function QuizScreen({words}: Props) {
     const [translations, setTranslations] = useState<Word[]>([])
     const [selectedWord, setSelectedWord] = useState<Word | null>(null)
     const [matched, setMatched] = useState<string[]>([])
-    const [wrong, setWrong] = useState<String | null>(null)
+    const [wrong, setWrong] = useState<string | null>(null)
 
     useEffect(() => {
         startQuiz()
@@ -53,9 +64,11 @@ export default function QuizScreen({words}: Props) {
     }
 
     if (words.length < 2) {
+        return (
         <View style={styles.container}>
             <Text>Add at least 2 words to start a quiz!</Text>
         </View>
+        )
     }
 
     const isFinished = matched.length === quizWords.length
