@@ -1,28 +1,18 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 import WordListScreen from './src/screens/WordListScreen';
 import AddWordScreen from './src/screens/AddWordScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import { Word } from './src/types';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getData, storeData } from './src/wordStore';
 
 const Tab = createBottomTabNavigator();
 
-const mockWords: Word[] = [
-    {id: "1", word: "hva", translation: "what" },
-    {id: "2", word: "gjør", translation: "do" },
-    {id: "3", word: "du", translation: "you" },
-    {id: "4", word: "jeg", translation: "I" },
-    {id: "5", word: "lager", translation: "make" },
-    {id: "6", word: "en gave", translation: "a present" },
-]
-
-
-
 export default function App() {
-  const [words, setWords] = useState<Word[]>(mockWords)
+  const [words, setWords] = useState<Word[]>([])
+  const hasLoaded = useRef(false)
 
   const handleAdd = (word: Word) => {
     setWords((prev) => [...prev, word])
@@ -31,6 +21,22 @@ export default function App() {
   const handleDelete = (id: string) => {
     setWords((prev) => prev.filter((word) => word.id !== id))
   }
+
+  useEffect(() => {
+    getData().then((result) => {
+      setWords(result ?? [])
+      hasLoaded.current = true
+    })
+    
+  }, [])
+
+  useEffect(() => {
+    if (!hasLoaded.current) {
+      return
+    }
+    storeData(words)
+  }, [words])
+
   return (
     <NavigationContainer>
       <Tab.Navigator>

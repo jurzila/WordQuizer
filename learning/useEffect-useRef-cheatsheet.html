@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>useEffect & useRef — Cheatsheet</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; padding: 2rem; color: #1a1a18; }
+  .sheet { max-width: 740px; margin: 0 auto; background: white; border-radius: 16px; padding: 2rem; border: 1px solid #e0dfd7; }
+  .top { display: flex; align-items: baseline; gap: 12px; margin-bottom: 1.5rem; border-bottom: 1px solid #e0dfd7; padding-bottom: 1rem; }
+  .top h1 { font-size: 20px; font-weight: 500; }
+  .top p { font-size: 13px; color: #888780; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .card { background: #fff; border: 1px solid #e0dfd7; border-radius: 12px; padding: 1rem 1.25rem; }
+  .card-label { font-size: 11px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
+  .card h2 { font-size: 15px; font-weight: 500; margin: 0 0 6px; }
+  .card .desc { font-size: 13px; color: #5f5e5a; line-height: 1.5; margin: 0 0 12px; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; margin-right: 4px; margin-bottom: 4px; }
+  .tag-purple { background: #EEEDFE; color: #3C3489; }
+  .tag-teal { background: #E1F5EE; color: #085041; }
+  pre { background: #f5f5f3; border-radius: 8px; padding: 10px 12px; font-size: 12px; font-family: 'SF Mono', 'Fira Mono', monospace; line-height: 1.6; margin: 8px 0 0; overflow-x: auto; color: #1a1a18; border: 1px solid #e0dfd7; }
+  .kw { color: #534AB7; }
+  .fn { color: #0F6E56; }
+  .cm { color: #888780; }
+  .bottom { background: #f5f5f3; border-radius: 12px; padding: 1rem 1.25rem; border: 1px solid #e0dfd7; }
+  .bottom h2 { font-size: 14px; font-weight: 500; margin: 0 0 10px; }
+  .rule-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
+  .rule-row .dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+  .dot-purple { background: #534AB7; }
+  .dot-teal { background: #0F6E56; }
+  .rule-row p { font-size: 13px; color: #5f5e5a; line-height: 1.5; }
+  .rule-row strong { color: #1a1a18; font-weight: 500; }
+  .rule-row code { font-family: 'SF Mono', 'Fira Mono', monospace; font-size: 12px; background: #e8e8e4; padding: 1px 4px; border-radius: 4px; }
+  .divider { height: 1px; background: #e0dfd7; margin: 10px 0; }
+  @media print {
+    body { background: white; padding: 0; }
+    .sheet { border: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="top">
+    <h1>useEffect &amp; useRef</h1>
+    <p>escape hatches from React's render cycle</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-label" style="color:#534AB7;">useEffect</div>
+      <h2>run code after render</h2>
+      <p class="desc">Syncs your component with something outside React — an API, a timer, local storage.</p>
+      <span class="tag tag-purple">side effects</span>
+      <span class="tag tag-purple">async</span>
+      <span class="tag tag-purple">subscriptions</span>
+      <pre><span class="kw">useEffect</span>(() => {
+  <span class="cm">// runs after render</span>
+  <span class="fn">fetchData</span>()
+
+  <span class="kw">return</span> () => {
+    <span class="cm">// cleanup on unmount</span>
+  }
+}, [dependency])</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-label" style="color:#0F6E56;">useRef</div>
+      <h2>remember without re-rendering</h2>
+      <p class="desc">Holds a mutable value across renders. Changing it never triggers a re-render.</p>
+      <span class="tag tag-teal">mutable box</span>
+      <span class="tag tag-teal">DOM access</span>
+      <span class="tag tag-teal">flags</span>
+      <pre><span class="kw">const</span> ref = <span class="fn">useRef</span>(<span class="kw">false</span>)
+
+<span class="cm">// read or write anytime</span>
+ref.current = <span class="kw">true</span>
+
+<span class="cm">// never causes re-render</span></pre>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-label" style="color:#534AB7;">dependency array</div>
+      <h2>controls when it runs</h2>
+      <pre><span class="cm">// runs once on mount</span>
+<span class="kw">useEffect</span>(() => { ... }, [])
+
+<span class="cm">// runs when words changes</span>
+<span class="kw">useEffect</span>(() => { ... }, [words])
+
+<span class="cm">// runs after every render ⚠️</span>
+<span class="kw">useEffect</span>(() => { ... })</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-label" style="color:#0F6E56;">ref vs state</div>
+      <h2>which one to reach for</h2>
+      <pre><span class="cm">// state — triggers re-render</span>
+<span class="kw">const</span> [loaded, setLoaded] =
+  <span class="fn">useState</span>(<span class="kw">false</span>)
+
+<span class="cm">// ref — silent update ✓</span>
+<span class="kw">const</span> loaded = <span class="fn">useRef</span>(<span class="kw">false</span>)
+loaded.current = <span class="kw">true</span></pre>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <h2>how they work together — real example</h2>
+    <pre><span class="kw">const</span> hasLoaded = <span class="fn">useRef</span>(<span class="kw">false</span>)   <span class="cm">// silent flag</span>
+
+<span class="kw">useEffect</span>(() => {                     <span class="cm">// load on mount</span>
+  <span class="fn">getData</span>().<span class="fn">then</span>((result) => {
+    <span class="fn">setWords</span>(result ?? [])
+    hasLoaded.current = <span class="kw">true</span>        <span class="cm">// unlock saving</span>
+  })
+}, [])
+
+<span class="kw">useEffect</span>(() => {                     <span class="cm">// save on change</span>
+  <span class="kw">if</span> (!hasLoaded.current) <span class="kw">return</span>    <span class="cm">// guard ← why ref, not state</span>
+  <span class="fn">storeData</span>(words)
+}, [words])</pre>
+    <div class="divider"></div>
+    <div class="rule-row">
+      <div class="dot dot-teal"></div>
+      <p><strong>Why ref here, not state?</strong> If <code>hasLoaded</code> were state, setting it to <code>true</code> would trigger a re-render, which would re-run the save effect — exactly the race condition we're trying to prevent.</p>
+    </div>
+    <div class="rule-row">
+      <div class="dot dot-purple"></div>
+      <p><strong>Order inside <code>.then()</code> matters.</strong> <code>setWords</code> first, then flip the ref — so saving is only unlocked after the loaded data is in state.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
 import { Word } from '../types'
+import * as Crypto from 'expo-crypto'
 
 type Props = {
     onAdd: (word: Word) => void
@@ -12,7 +13,7 @@ const [translation, setTranslation] = useState('')
 
 const handleSave = () => {
     if (!word.trim() || !translation.trim()) return;
-    onAdd({id: Date.now().toString(), word: word.trim(), translation: translation.trim()})
+    onAdd({id: Crypto.randomUUID().toString(), word: word.trim(), translation: translation.trim()})
     setWord('')
     setTranslation('')
 }
