@@ -1,46 +1,71 @@
-import { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
-import { Word } from '../types'
-import * as Crypto from 'expo-crypto'
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import * as Crypto from "expo-crypto";
+import { useWordApp } from "../context/WordAppContext";
+import { LessonsStackParamList } from "../navigation/types";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { sharedStyles } from "../theme/sharedStyles";
 
-type Props = {
-    onAdd: (word: Word) => void
-}
+type NavProp = NativeStackNavigationProp<
+  LessonsStackParamList,
+  "AddWordScreen"
+>;
 
-export default function AddWordScreen({onAdd}: Props) {
-const [word, setWord] = useState('')
-const [translation, setTranslation] = useState('')
+export default function AddWordScreen() {
+  const route = useRoute<RouteProp<LessonsStackParamList, "AddWordScreen">>();
+  const navigation = useNavigation<NavProp>();
+  const { collectionId } = route.params;
+  const { handleAddWord } = useWordApp();
+  const [word, setWord] = useState("");
+  const [translation, setTranslation] = useState("");
 
-const handleSave = () => {
+  const handleSave = () => {
     if (!word.trim() || !translation.trim()) return;
-    onAdd({id: Crypto.randomUUID().toString(), word: word.trim(), translation: translation.trim()})
-    setWord('')
-    setTranslation('')
-}
+    handleAddWord({
+      id: Crypto.randomUUID().toString(),
+      collectionId: collectionId,
+      word: word.trim(),
+      translation: translation.trim(),
+    });
+    setWord("");
+    setTranslation("");
+    navigation.goBack();
+  };
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.label}>Word</Text>
-            <TextInput style={styles.input} value={word} onChangeText={setWord} placeholder="add a word" />
-            <Text style={styles.label}>Translation</Text>
-            <TextInput style={styles.input} value={translation} onChangeText={setTranslation} placeholder="add a translation" />
-            <TouchableOpacity style={styles.button} onPress={handleSave}>
-                <Text style={styles.buttonText}>Save Word</Text>
-            </TouchableOpacity>
-        </View>
-    )
+  return (
+    <View style={sharedStyles.container}>
+      <Text style={sharedStyles.label}>Word</Text>
+      <TextInput
+        style={[sharedStyles.input, styles.input]}
+        value={word}
+        onChangeText={setWord}
+        placeholder="add a word"
+      />
+      <Text style={sharedStyles.label}>Translation</Text>
+      <TextInput
+        style={[sharedStyles.input, styles.input]}
+        value={translation}
+        onChangeText={setTranslation}
+        placeholder="add a translation"
+      />
+      <TouchableOpacity
+        style={[sharedStyles.primaryButton, styles.button]}
+        onPress={handleSave}
+      >
+        <Text style={sharedStyles.primaryButtonText}>Save Word</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1, padding: 16},
-    label: { fontSize: 14, fontWeight: "bold", marginBottom: 4, marginTop: 16},
-    input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 12 ,fontSize: 16},
-    button: {
-        backgroundColor: "#4CAF50",
-        padding: 16,
-        borderRadius: 8,
-        alignItems: "center",
-        marginTop: 24
-    },
-    buttonText: { color: "white", fontWeight: "bold", fontSize: 16}
-})
+  input: { marginBottom: 16 },
+  button: { marginTop: 8 },
+});
