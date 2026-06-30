@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conveyor-belt state & Context — Cheatsheet</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; padding: 2rem; color: #1a1a18; }
+  .sheet { max-width: 760px; margin: 0 auto; background: white; border-radius: 16px; padding: 2rem; border: 1px solid #e0dfd7; }
+  .top { margin-bottom: 1.5rem; border-bottom: 1px solid #e0dfd7; padding-bottom: 1rem; }
+  .top h1 { font-size: 20px; font-weight: 600; }
+  .top p { font-size: 13px; color: #888780; margin-top: 4px; }
+  .card { background: #fff; border: 1px solid #e0dfd7; border-radius: 12px; padding: 1.25rem; margin-bottom: 16px; }
+  .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .card .desc { font-size: 13px; color: #5f5e5a; line-height: 1.5; margin-bottom: 10px; }
+  pre { background: #f5f5f3; border-radius: 8px; padding: 12px 14px; font-size: 12px; font-family: 'SF Mono', 'Fira Mono', monospace; line-height: 1.7; margin: 0; overflow-x: auto; color: #1a1a18; border: 1px solid #e0dfd7; }
+  .kw { color: #534AB7; }
+  .fn { color: #0F6E56; }
+  .cm { color: #888780; }
+  .flow { display: flex; align-items: center; gap: 6px; margin: 12px 0; flex-wrap: wrap; }
+  .step { background: #f5f5f3; border: 1px solid #e0dfd7; border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 600; }
+  .arrow { color: #888780; font-size: 13px; }
+  .rule-row { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; }
+  .rule-row .dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; background: #0F6E56; }
+  .rule-row p { font-size: 13px; color: #5f5e5a; line-height: 1.5; }
+  .rule-row strong { color: #1a1a18; }
+  .rule-row code { font-family: 'SF Mono', 'Fira Mono', monospace; font-size: 12px; background: #e8e8e4; padding: 1px 4px; border-radius: 4px; }
+  .divider { height: 1px; background: #e0dfd7; margin: 14px 0; }
+  .badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 99px; background: #EEEDFE; color: #3C3489; margin-bottom: 10px; font-weight: 600; }
+  .badge-teal { background: #E1F5EE; color: #085041; }
+  @media print {
+    body { background: white; padding: 0; }
+    .sheet { border: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="top">
+    <h1>Conveyor-belt state &amp; context</h1>
+    <p>two real lessons from building a word-quiz app</p>
+  </div>
+
+  <div class="card">
+    <span class="badge">state</span>
+    <h2>the conveyor belt: one tap, four state updates</h2>
+    <p class="desc">A correct match has to remove the word from view, pull the next one from a waiting pool, and reshuffle the translation column — all from one tap.</p>
+    <div class="flow">
+      <span class="step">pool</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">visible (5)</span>
+      <span class="arrow">&rarr;</span>
+      <span class="step">matched</span>
+    </div>
+    <pre><span class="kw">if</span> (selectedWord.id === item.id) {
+  <span class="fn">setMatched</span>((prev) => [...prev, item.id]);
+
+  <span class="kw">let</span> updated = quizWords.<span class="fn">filter</span>(
+    (w) => w.id !== selectedWord.id
+  );
+  <span class="kw">if</span> (wordPool.length > 0) {
+    updated = [...updated, wordPool[0]];
+    <span class="fn">setWordPool</span>(wordPool.<span class="fn">slice</span>(1));
+  }
+
+  <span class="cm">// derive once, write once &rarr;</span>
+  <span class="fn">setQuizWords</span>(updated);
+  <span class="fn">setTranslations</span>(<span class="fn">shuffle</span>(updated));
+}</pre>
+    <div class="rule-row">
+      <div class="dot"></div>
+      <p><strong>Setters don't return values.</strong> <code>const x = setState(...)</code> gives you <code>undefined</code> &mdash; state updates aren't synchronous. Compute the new value as a plain variable first, then feed every setter from that same variable.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge badge-teal">architecture</span>
+    <h2>context: stop threading props through navigators</h2>
+    <p class="desc">Adding nested screens meant every prop had to pass through layers that didn't use it &mdash; a navigator just forwarding data it doesn't care about.</p>
+    <div class="divider"></div>
+    <pre><span class="cm">// before &mdash; prop drilling through the tab screen</span>
+&lt;Tab.Screen name=<span class="kw">"Words"</span>&gt;
+  {() => &lt;WordListScreen
+    words={words}
+    onDelete={handleDeleteWord}
+  /&gt;}
+&lt;/Tab.Screen&gt;</pre>
+    <div style="height: 10px;"></div>
+    <pre><span class="cm">// after &mdash; the screen reaches in directly</span>
+&lt;Tab.Screen name=<span class="kw">"Words"</span> component={WordListScreen} /&gt;
+
+<span class="cm">// inside any screen, however deeply nested:</span>
+<span class="kw">const</span> { words, handleDeleteWord } = <span class="fn">useWordApp</span>();</pre>
+    <div class="rule-row">
+      <div class="dot"></div>
+      <p><strong>Provider broadcasts, consumers tune in.</strong> One component high in the tree supplies the values; any screen below calls <code>useContext</code> to read them directly &mdash; no relay required at every level in between.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
