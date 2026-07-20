@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -25,6 +25,8 @@ export default function AddWordScreen() {
   const { handleAddWord } = useWordApp();
   const [word, setWord] = useState("");
   const [translation, setTranslation] = useState("");
+  const [saved, setSaved] = useState(false);
+  const wordInputRef = useRef<TextInput>(null);
 
   const handleSave = () => {
     if (!word.trim() || !translation.trim()) return;
@@ -36,13 +38,16 @@ export default function AddWordScreen() {
     });
     setWord("");
     setTranslation("");
-    navigation.goBack();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1500);
+    wordInputRef.current?.focus();
   };
 
   return (
     <View style={sharedStyles.container}>
       <Text style={sharedStyles.label}>Word</Text>
       <TextInput
+        ref={wordInputRef}
         style={[sharedStyles.input, styles.input]}
         value={word}
         onChangeText={setWord}
@@ -61,6 +66,7 @@ export default function AddWordScreen() {
       >
         <Text style={sharedStyles.primaryButtonText}>Save Word</Text>
       </TouchableOpacity>
+      {saved && <Text style={styles.savedMessage}>Word saved!</Text>}
     </View>
   );
 }
@@ -68,4 +74,12 @@ export default function AddWordScreen() {
 const styles = StyleSheet.create({
   input: { marginBottom: 16 },
   button: { marginTop: 8 },
+
+  savedMessage: {
+    color: "#2f6b3a",
+    textAlign: "center",
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: "500",
+  },
 });
