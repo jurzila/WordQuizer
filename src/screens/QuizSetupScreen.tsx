@@ -11,6 +11,7 @@ type NavProp = NativeStackNavigationProp<QuizStackParamList, "QuizSetupScreen">;
 export default function QuizSetupScreen() {
   const { collections } = useWordApp();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [mode, setMode] = useState<"word" | "translation">("word");
   const navigation = useNavigation<NavProp>();
 
   function toggleCollection(selectedCollectionId: string) {
@@ -27,10 +28,17 @@ export default function QuizSetupScreen() {
     });
   };
 
+  const startFlashcards = () => {
+    navigation.navigate("FlashcardScreen", {
+      collectionIds: selectedIds,
+      mode,
+    });
+  };
+
   const hasSelection = selectedIds.length > 0;
 
   return (
-    <View style={sharedStyles.container}>
+    <View style={[sharedStyles.container, { alignItems: "stretch" }]}>
       <Text style={sharedStyles.title}>Start a quiz</Text>
       <Text style={styles.subtitle}>
         Pick one or more lessons to quiz yourself on
@@ -78,20 +86,75 @@ export default function QuizSetupScreen() {
           })}
         </View>
       )}
-
-      <TouchableOpacity
-        style={[
-          sharedStyles.primaryButton,
-          !hasSelection && sharedStyles.primaryButtonDisabled,
-          styles.startButton,
-        ]}
-        onPress={startQuiz}
-        disabled={!hasSelection}
-      >
-        <Text style={sharedStyles.primaryButtonText}>
-          {hasSelection ? "Start quiz" : "Select a lesson to begin"}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.modeSelector}>
+        <Text style={styles.modeSelectorLabel}>Flashcard direction</Text>
+        <View style={styles.modeRow}>
+          <TouchableOpacity
+            style={[
+              styles.modeButton,
+              mode === "word" && styles.modeButtonActive,
+            ]}
+            onPress={() => setMode("word")}
+          >
+            <Text
+              style={[
+                styles.modeButtonText,
+                mode === "word" && styles.modeButtonTextActive,
+              ]}
+            >
+              Word → Translation
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.modeButton,
+              mode === "translation" && styles.modeButtonActive,
+            ]}
+            onPress={() => setMode("translation")}
+          >
+            <Text
+              style={[
+                styles.modeButtonText,
+                mode === "translation" && styles.modeButtonTextActive,
+              ]}
+            >
+              Translation → Word
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            styles.quizButton,
+            !hasSelection && styles.buttonDisabled,
+          ]}
+          onPress={startQuiz}
+          disabled={!hasSelection}
+        >
+          <Text style={sharedStyles.primaryButtonText}>Quiz</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            styles.flashcardButton,
+            !hasSelection && styles.buttonDisabled,
+          ]}
+          onPress={startFlashcards}
+          disabled={!hasSelection}
+        >
+          <Text
+            style={[
+              sharedStyles.secondaryButtonText,
+              !hasSelection && { color: "#fff" },
+              hasSelection && { color: "#2f6b3a" },
+            ]}
+          >
+            Flashcards
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -115,5 +178,48 @@ const styles = StyleSheet.create({
   checkboxSelected: { borderColor: "#2f6b3a", backgroundColor: "#2f6b3a" },
   checkmark: { color: "#fff", fontSize: 13, fontWeight: "700" },
 
-  startButton: { marginTop: "auto" },
+  button: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quizButton: {
+    backgroundColor: "#2f6b3a",
+  },
+  flashcardButton: {
+    borderWidth: 1,
+    borderColor: "#2f6b3a",
+  },
+  buttonDisabled: {
+    backgroundColor: "#d8d6cd",
+    borderColor: "#d8d6cd",
+  },
+
+  buttonRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: "auto",
+    width: "100%",
+  },
+  modeSelector: { marginBottom: 16 },
+  modeSelectorLabel: {
+    fontSize: 13,
+    color: "#888780",
+    marginBottom: 8,
+    fontWeight: "500",
+  },
+  modeRow: { flexDirection: "row", gap: 8 },
+  modeButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d8d6cd",
+  },
+  modeButtonActive: { borderColor: "#2f6b3a", backgroundColor: "#eef6ef" },
+  modeButtonText: { fontSize: 13, fontWeight: "500", color: "#888780" },
+  modeButtonTextActive: { color: "#2f6b3a", fontWeight: "600" },
 });
