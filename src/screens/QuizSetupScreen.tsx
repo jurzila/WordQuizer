@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 14, color: "#888780", marginBottom: 20 },
 
   cardRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  cardSelected: { borderColor: "#2f6b3a", backgroundColor: "#eef6ef" },
+  cardSelected: { borderColor: "#2f6b3a", backgroundColor: "#f6f6ee" },
   cardTextSelected: { color: "#2f6b3a", fontWeight: "600" },
 
   checkbox: {

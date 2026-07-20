@@ -64,6 +64,8 @@ export default function QuizScreen() {
   }
 
   const isFinished = quizWords.length === 0 && wordPool.length === 0;
+  const total = quizWords.length + wordPool.length + matched.length;
+  const completed = matched.length;
 
   return (
     <View style={sharedStyles.container}>
@@ -82,6 +84,19 @@ export default function QuizScreen() {
           <Text style={[sharedStyles.title, styles.title]}>
             Match the pairs
           </Text>
+          <View style={styles.progress}>
+            <Text style={styles.progressText}>
+              {completed} / {total}
+            </Text>
+            <View style={styles.progressBar}>
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${total > 0 ? (completed / total) * 100 : 0}%` },
+                ]}
+              />
+            </View>
+          </View>
           <View style={styles.columns}>
             <View style={styles.column}>
               {quizWords.map((item) => {
@@ -134,4 +149,25 @@ const styles = StyleSheet.create({
   result: { flex: 1, alignItems: "center", justifyContent: "center", gap: 16 },
   resultText: { fontSize: 28, fontWeight: "bold" },
   title: { marginBottom: 16 },
+
+  progress: {
+    marginBottom: 24,
+    gap: 8,
+  },
+  progressText: {
+    fontSize: 13,
+    color: "#888780",
+    textAlign: "right",
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: "#e6e4da",
+    borderRadius: 99,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#2f6b3a",
+    borderRadius: 99,
+  },
 });
