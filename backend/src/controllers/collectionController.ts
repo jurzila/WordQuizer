@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import Collection from "../models/Collection";
+import Word from "../models/Word";
 
 export const getCollections = async (
   req: Request,
@@ -38,14 +39,17 @@ export const deleteCollection = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const collection = await Collection.findByIdAndDelete(
-      req.params.collectionId,
-    );
+    const collectionId = req.params.collectionId;
+    const collection = await Collection.findById(collectionId);
     if (!collection) {
       res.status(404).json({ message: "Collection not found" });
       return;
     }
-    res.json({ message: "Collection deleted" });
+
+    const { deletedCount } = await Word.deleteMany({ collectionId });
+    await Collection.findByIdAndDelete(collectionId);
+
+    res.json({ message: "Collection deleted", wordsDeleted: deletedCount });
   } catch (error) {
     next(error);
   }
