@@ -1,33 +1,27 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Word } from "../types";
-import { getWords, storeWords } from "../localStore";
+import { createWord, deleteWord, getWords } from "../api";
 
 export function useWords() {
-  const hasLoadedWords = useRef(false);
-
   const [words, setWords] = useState<Word[]>([]);
 
-  const handleAddWord = (word: Word) => {
-    setWords((prev) => [...prev, word]);
+  useEffect(() => {
+    getWords().then(setWords)
+  }, [])
+
+  const handleAddWord = async (
+    word: string,
+    translation: string,
+    collectionId: string,
+  ) => {
+    const newWord = await createWord(word, translation, collectionId);
+    setWords((prev) => [...prev, newWord]);
   };
 
-  const handleDeleteWord = (id: string) => {
-    setWords((prev) => prev.filter((word) => word.id !== id));
+  const handleDeleteWord = async (id: string) => {
+    await deleteWord(id);
+    setWords((prev) => prev.filter((word) => word._id !== id));
   };
 
-  useEffect(() => {
-    getWords().then((result) => {
-      setWords(result ?? []);
-      hasLoadedWords.current = true;
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!hasLoadedWords.current) {
-      return;
-    }
-    storeWords(words);
-  }, [words]);
-
-  return { handleAddWord, handleDeleteWord, setWords, words };
+  return { handleAddWord, handleDeleteWord, words };
 }

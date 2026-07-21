@@ -6,21 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import * as Crypto from "expo-crypto";
 import { useWordApp } from "../context/WordAppContext";
 import { LessonsStackParamList } from "../navigation/types";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { sharedStyles } from "../theme/sharedStyles";
-
-type NavProp = NativeStackNavigationProp<
-  LessonsStackParamList,
-  "AddWordScreen"
->;
 
 export default function AddWordScreen() {
   const route = useRoute<RouteProp<LessonsStackParamList, "AddWordScreen">>();
-  const navigation = useNavigation<NavProp>();
   const { collectionId } = route.params;
   const { handleAddWord } = useWordApp();
   const [word, setWord] = useState("");
@@ -30,12 +22,7 @@ export default function AddWordScreen() {
 
   const handleSave = () => {
     if (!word.trim() || !translation.trim()) return;
-    handleAddWord({
-      id: Crypto.randomUUID().toString(),
-      collectionId: collectionId,
-      word: word.trim(),
-      translation: translation.trim(),
-    });
+    handleAddWord(word.trim(), translation.trim(), collectionId);
     setWord("");
     setTranslation("");
     setSaved(true);

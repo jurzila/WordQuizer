@@ -1,11 +1,11 @@
 export type Word = {
-  id: string;
+  _id: string;
   word: string;
   translation: string;
   collectionId: string;
 };
 
 export type Collection = {
-  id: string;
+  _id: string;
   name: string;
 };

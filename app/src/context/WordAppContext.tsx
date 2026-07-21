@@ -6,9 +6,9 @@ import { useCollections } from "../hooks/useCollections";
 export type WordAppContext = {
   words: Word[];
   collections: Collection[];
-  handleAddWord: (word: Word) => void;
+  handleAddWord: (word: string, translation: string, collectionId: string) => void;
   handleDeleteWord: (id: string) => void;
-  handleAddCollection: (collection: Collection) => void;
+  handleAddCollection: (name: string) => void;
   handleDeleteCollection: (id: string) => void;
   handleRenameCollection: (id: string, name: string) => void;
 };
@@ -23,13 +23,13 @@ export function useWordApp() {
 }
 
 export function WordAppProvider({ children }: {children: React.ReactNode}) {
-      const { words, handleAddWord, handleDeleteWord, setWords } = useWords();
+      const { words, handleAddWord, handleDeleteWord } = useWords();
       const {
         collections,
         handleAddCollection,
         handleDeleteCollection,
         handleRenameCollection,
-      } = useCollections(setWords);
+      } = useCollections();
 
       return (
         <WordAppContext.Provider value={{

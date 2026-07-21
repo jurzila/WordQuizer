@@ -54,16 +54,16 @@ export default function QuizSetupScreen() {
       ) : (
         <View style={sharedStyles.list}>
           {collections.map((item) => {
-            const isSelected = selectedIds.includes(item.id);
+            const isSelected = selectedIds.includes(item._id);
             return (
               <TouchableOpacity
-                key={item.id}
+                key={item._id}
                 style={[
                   sharedStyles.card,
                   styles.cardRow,
                   isSelected && styles.cardSelected,
                 ]}
-                onPress={() => toggleCollection(item.id)}
+                onPress={() => toggleCollection(item._id)}
               >
                 <View
                   style={[

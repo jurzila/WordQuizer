@@ -35,15 +35,15 @@ export default function QuizScreen() {
   };
 
   const handleWordPress = (item: Word) => {
-    if (matched.includes(item.id)) return;
+    if (matched.includes(item._id)) return;
     dispatch({ type: "SELECT_WORD", payload: item });
   };
 
   const handleTranslationPress = (item: Word) => {
-    if (matched.includes(item.id)) return;
+    if (matched.includes(item._id)) return;
     if (!selectedWord) return;
 
-    if (selectedWord.id === item.id) {
+    if (selectedWord._id === item._id) {
       dispatch({ type: "CORRECT_MATCH", payload: item });
 
       setTimeout(() => {
@@ -100,11 +100,11 @@ export default function QuizScreen() {
           <View style={styles.columns}>
             <View style={styles.column}>
               {quizWords.map((item) => {
-                const isMatched = matched.includes(item.id);
-                const isSelected = selectedWord?.id === item.id;
+                const isMatched = matched.includes(item._id);
+                const isSelected = selectedWord?._id === item._id;
                 return (
                   <QuizCard
-                    key={item.id}
+                    key={item._id}
                     text={item.word}
                     onPress={() => handleWordPress(item)}
                     disabled={isMatched}
@@ -118,11 +118,11 @@ export default function QuizScreen() {
 
             <View style={styles.column}>
               {translations.map((item) => {
-                const isMatched = matched.includes(item.id);
-                const isWrong = wrong === item.id;
+                const isMatched = matched.includes(item._id);
+                const isWrong = wrong === item._id;
                 return (
                   <QuizCard
-                    key={item.id}
+                    key={item._id}
                     text={item.translation}
                     onPress={() => handleTranslationPress(item)}
                     disabled={isMatched || isAnimating}

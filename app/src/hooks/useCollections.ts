@@ -1,44 +1,41 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { Collection, Word } from "../types";
-import { getCollections, storeCollections } from "../localStore";
+import { useEffect, useState } from "react";
+import { Collection } from "../types";
+import {
+  createCollection,
+  deleteCollection,
+  getCollections,
+  renameCollection,
+} from "../api";
 
-export function useCollections(setWords: Dispatch<SetStateAction<Word[]>>) {
-  const hasLoadedCollections = useRef(false);
-
+export function useCollections() {
   const [collections, setCollections] = useState<Collection[]>([]);
 
-  const handleAddCollection = (collection: Collection) => {
-    setCollections((prev) => [...prev, collection]);
+  useEffect(() => {
+    getCollections().then(setCollections);
+  }, []);
+
+  const handleAddCollection = async (name: string) => {
+    const newCollection = await createCollection(name);
+    setCollections((prev) => [...prev, newCollection]);
   };
 
-  const handleDeleteCollection = (id: string) => {
-    setCollections((prev) => prev.filter((collection) => collection.id !== id));
-    setWords((prev) => prev.filter((word) => word.collectionId !== id));
+  const handleDeleteCollection = async (id: string) => {
+    await deleteCollection(id);
+    setCollections((prev) =>
+      prev.filter((collection) => collection._id !== id),
+    );
   };
 
-  const handleRenameCollection = (id: string, name: string) => {
+  const handleRenameCollection = async (id: string, name: string) => {
+    const updatedCollection = await renameCollection(name, id);
     const renamed = collections.map((collection) => {
-      if (collection.id === id) {
-        return { ...collection, name: name };
+      if (collection._id === id) {
+        return updatedCollection;
       }
       return collection;
     });
     setCollections(renamed);
   };
-
-  useEffect(() => {
-    getCollections().then((result) => {
-      setCollections(result ?? []);
-      hasLoadedCollections.current = true;
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!hasLoadedCollections.current) {
-      return;
-    }
-    storeCollections(collections);
-  }, [collections]);
 
   return {
     handleAddCollection,

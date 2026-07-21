@@ -49,7 +49,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
     case "WRONG_MATCH": {
       return {
         ...state,
-        wrong: action.payload.id,
+        wrong: action.payload._id,
         isAnimating: true,
       };
     }
@@ -57,16 +57,16 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
       const nextWord = state.wordPool[0];
       const updatedPool = state.wordPool.slice(1);
       const updatedQuizWords = [
-        ...state.quizWords.filter((w) => w.id !== action.payload.id),
+        ...state.quizWords.filter((w) => w._id !== action.payload._id),
         ...(nextWord ? [nextWord] : []),
       ];
       const updatedTranslations = [
-        ...state.translations.filter((w) => w.id !== action.payload.id),
+        ...state.translations.filter((w) => w._id !== action.payload._id),
         ...(nextWord ? [nextWord] : []),
       ];
       return {
         ...state,
-        matched: [...state.matched, action.payload.id],
+        matched: [...state.matched, action.payload._id],
         quizWords: updatedQuizWords,
         translations: updatedTranslations,
         wordPool: updatedPool,

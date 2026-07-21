@@ -43,7 +43,7 @@ export default function LessonDetailScreen() {
 
       <FlatList
         data={lessonWord}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         contentContainerStyle={sharedStyles.list}
         style={styles.list}
         renderItem={({ item }) => (
@@ -51,7 +51,7 @@ export default function LessonDetailScreen() {
             <View style={sharedStyles.cardRow}>
               <Text style={styles.word}>{item.word}</Text>
               <Text style={styles.translation}>{item.translation}</Text>
-              <TouchableOpacity onPress={() => handleDeleteWord(item.id)}>
+              <TouchableOpacity onPress={() => handleDeleteWord(item._id)}>
                 <Text style={sharedStyles.deleteText}>Delete</Text>
               </TouchableOpacity>
             </View>

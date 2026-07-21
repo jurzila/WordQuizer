@@ -11,7 +11,6 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { LessonsStackParamList } from "../navigation/types";
 import { useState } from "react";
-import * as Crypto from "expo-crypto";
 import { Collection } from "../types";
 import { sharedStyles } from "../theme/sharedStyles";
 
@@ -46,17 +45,14 @@ export default function LessonsScreen() {
 
   const confirmCreate = () => {
     if (!collectionName.trim()) return;
-    handleAddCollection({
-      id: Crypto.randomUUID().toString(),
-      name: collectionName.trim(),
-    });
+    handleAddCollection(collectionName.trim());
     cancelCreate();
   };
 
   // --- rename ---
 
   const openRename = (item: Collection) => {
-    setEditingId(item.id);
+    setEditingId(item._id);
     setEditText(item.name);
   };
 
@@ -73,7 +69,7 @@ export default function LessonsScreen() {
 
   const openLesson = (item: Collection) => {
     navigation.navigate("LessonDetailScreen", {
-      collectionId: item.id,
+      collectionId: item._id,
       collectionName: item.name,
     });
   };
@@ -130,10 +126,10 @@ export default function LessonsScreen() {
 
       <FlatList
         data={collections}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         contentContainerStyle={sharedStyles.list}
         renderItem={({ item }) => {
-          const isEditing = item.id === editingId;
+          const isEditing = item._id === editingId;
 
           return (
             <View style={sharedStyles.card}>
@@ -174,7 +170,7 @@ export default function LessonsScreen() {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={sharedStyles.textButton}
-                    onPress={() => handleDeleteCollection(item.id)}
+                    onPress={() => handleDeleteCollection(item._id)}
                   >
                     <Text style={sharedStyles.deleteText}>Delete</Text>
                   </TouchableOpacity>
