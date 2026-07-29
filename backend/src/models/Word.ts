@@ -4,18 +4,23 @@ const wordSchema = new mongoose.Schema(
   {
     word: {
       type: String,
-      requered: true,
+      required: true,
       trim: true,
     },
     translation: {
       type: String,
-      requered: true,
+      required: true,
       trim: true,
     },
     collectionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Collection",
-      requered: true,
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   { timestamps: true },

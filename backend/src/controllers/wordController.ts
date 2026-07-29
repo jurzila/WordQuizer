@@ -7,7 +7,7 @@ export const getWords = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.userId });
     res.json(words);
   } catch (error) {
     next(error);
@@ -21,7 +21,10 @@ export const getWordsByCollection = async (
 ): Promise<void> => {
   try {
     const collectionId = req.params.collectionId;
-    const words = await Word.find({ collectionId });
+    const words = await Word.find({
+      collectionId: collectionId,
+      userId: req.userId,
+    });
     res.json(words);
   } catch (error) {
     next(error);
@@ -41,7 +44,12 @@ export const createWord = async (
       res.status(400).json({ message: "Invalid input" });
       return;
     }
-    const savedWord = await Word.create({ word, translation, collectionId });
+    const savedWord = await Word.create({
+      word,
+      translation,
+      collectionId,
+      userId: req.userId,
+    });
     res.status(201).json(savedWord);
   } catch (error) {
     next(error);
@@ -59,7 +67,10 @@ export const deleteWord = async (
       res.status(400).json({ message: "Invalid id" });
       return;
     }
-    const deletedWord = await Word.findByIdAndDelete(id);
+    const deletedWord = await Word.findOneAndDelete({
+      _id: id,
+      userId: req.userId,
+    });
     if (!deletedWord) {
       res.status(404).json({ message: "Word not found" });
       return;
@@ -76,12 +87,12 @@ export const getQuizWords = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { colleactionIds } = req.query;
-    const ids = Array.isArray(colleactionIds)
-      ? colleactionIds
-      : [colleactionIds];
+    const { collectionIds } = req.query;
+    const ids = Array.isArray(collectionIds)
+      ? collectionIds
+      : [collectionIds];
     const words = await Word.aggregate([
-      { $match: { colleactionId: { $in: ids } } },
+      { $match: { collectionId: { $in: ids }, userId: req.userId } },
       { $sample: { size: 30 } },
     ]);
     res.json(words);

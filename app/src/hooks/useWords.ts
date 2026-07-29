@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Word } from "../types";
 import { createWord, deleteWord, getWords } from "../api";
 
-export function useWords() {
+export function useWords(token: string | null) {
   const [words, setWords] = useState<Word[]>([]);
 
   useEffect(() => {
-    getWords().then(setWords)
-  }, [])
+    if (!token) return;
+    getWords(token).then(setWords);
+  }, [token]);
 
   const handleAddWord = async (
     word: string,

@@ -7,12 +7,13 @@ import {
   renameCollection,
 } from "../api";
 
-export function useCollections() {
+export function useCollections(token: string | null) {
   const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
-    getCollections().then(setCollections);
-  }, []);
+    if (!token) return
+    getCollections(token).then(setCollections);
+  }, [token]);
 
   const handleAddCollection = async (name: string) => {
     const newCollection = await createCollection(name);
