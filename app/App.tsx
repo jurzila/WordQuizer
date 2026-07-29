@@ -6,6 +6,7 @@ import LessonsNavigator from "./src/navigation/LessonsNavigator";
 import { View, Text } from "react-native";
 import AuthScreen from "./src/screens/AuthScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
+import GlobalFeedback from "./src/components/GlobalFeedback";
 
 const Tab = createBottomTabNavigator();
 
@@ -31,11 +32,13 @@ function AppNavigator() {
   return (
     <NavigationContainer>
       {token ? (
-        <Tab.Navigator>
-          <Tab.Screen name="Lessons" component={LessonsNavigator} />
-          <Tab.Screen name="Quiz" component={QuizNavigator} />
-          <Tab.Screen name="Profile" component={ProfileScreen} />
-        </Tab.Navigator>
+        <GlobalFeedback>
+          <Tab.Navigator>
+            <Tab.Screen name="Lessons" component={LessonsNavigator} />
+            <Tab.Screen name="Quiz" component={QuizNavigator} />
+            <Tab.Screen name="Profile" component={ProfileScreen} />
+          </Tab.Navigator>
+        </GlobalFeedback>
       ) : (
         <AuthScreen />
       )}

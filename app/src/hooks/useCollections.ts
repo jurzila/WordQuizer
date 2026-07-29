@@ -7,35 +7,68 @@ import {
   renameCollection,
 } from "../api";
 
-export function useCollections(token: string | null) {
+export function useCollections(
+  token: string | null,
+  setLoading: (v: boolean) => void,
+  setError: (v: string | null) => void,
+) {
   const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
-    if (!token) return
-    getCollections(token).then(setCollections);
+    if (!token) return;
+    setLoading(true);
+    setError(null);
+    getCollections(token)
+      .then(setCollections)
+      .catch(() => setError("Failed to load lessons"))
+      .finally(() => setLoading(false));
   }, [token]);
 
   const handleAddCollection = async (name: string) => {
-    const newCollection = await createCollection(name);
-    setCollections((prev) => [...prev, newCollection]);
+    setLoading(true);
+    setError(null);
+    try {
+      const newCollection = await createCollection(name);
+      setCollections((prev) => [...prev, newCollection]);
+    } catch {
+      setError("Failed to add lesson");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteCollection = async (id: string) => {
-    await deleteCollection(id);
-    setCollections((prev) =>
-      prev.filter((collection) => collection._id !== id),
-    );
+    setLoading(true);
+    setError(null);
+    try {
+      await deleteCollection(id);
+      setCollections((prev) =>
+        prev.filter((collection) => collection._id !== id),
+      );
+    } catch {
+      setError("Failed to delete lesson");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRenameCollection = async (id: string, name: string) => {
-    const updatedCollection = await renameCollection(name, id);
-    const renamed = collections.map((collection) => {
-      if (collection._id === id) {
-        return updatedCollection;
-      }
-      return collection;
-    });
-    setCollections(renamed);
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedCollection = await renameCollection(name, id);
+      const renamed = collections.map((collection) => {
+        if (collection._id === id) {
+          return updatedCollection;
+        }
+        return collection;
+      });
+      setCollections(renamed);
+    } catch {
+      setError("Failed to rename lesson");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {

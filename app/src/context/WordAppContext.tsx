@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import { Collection, Word } from "../types";
 import { useWords } from "../hooks/useWords";
 import { useCollections } from "../hooks/useCollections";
@@ -22,6 +22,8 @@ export type WordAppContext = {
   handleLogin: (email: string, password: string) => Promise<void>;
   handleRegister: (email: string, password: string) => Promise<void>;
   handleLogout: () => void;
+  loading: boolean;
+  error: string | null;
 };
 
 const WordAppContext = createContext<WordAppContext | null>(null);
@@ -36,13 +38,20 @@ export function useWordApp() {
 export function WordAppProvider({ children }: { children: React.ReactNode }) {
   const { token, email, isLoading, handleLogin, handleRegister, handleLogout } =
     useAuth();
-  const { words, handleAddWord, handleDeleteWord } = useWords(token);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { words, handleAddWord, handleDeleteWord } = useWords(
+    token,
+    setLoading,
+    setError,
+  );
   const {
     collections,
     handleAddCollection,
     handleDeleteCollection,
     handleRenameCollection,
-  } = useCollections(token);
+  } = useCollections(token, setLoading, setError);
 
   return (
     <WordAppContext.Provider
@@ -60,6 +69,8 @@ export function WordAppProvider({ children }: { children: React.ReactNode }) {
         handleLogin,
         handleRegister,
         handleLogout,
+        loading,
+        error,
       }}
     >
       {children}
