@@ -1,6 +1,7 @@
 import { Collection, Word } from "./types";
 
-const BASE_URL = "http://192.168.0.110:3000/api";
+const BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL || "http://192.168.0.110:3000/api";
 const authHeaders = (token: string) => ({
   "Content-Type": "application/json",
   Authorization: `Bearer ${token}`,
@@ -12,8 +13,10 @@ export const setToken = (newToken: string) => {
   token = newToken;
 };
 
-export const getCollections = async (authToken?: string): Promise<Collection[]> => {
-  const t = authToken || token
+export const getCollections = async (
+  authToken?: string,
+): Promise<Collection[]> => {
+  const t = authToken || token;
   const response = await fetch(`${BASE_URL}/collection`, {
     method: "GET",
     headers: authHeaders(t),
@@ -54,7 +57,7 @@ export const deleteCollection = async (collectionId: string): Promise<void> => {
 };
 
 export const getWords = async (authToken?: string): Promise<Word[]> => {
-  const t = authToken || token
+  const t = authToken || token;
   const response = await fetch(`${BASE_URL}/word`, {
     method: "GET",
     headers: authHeaders(t),

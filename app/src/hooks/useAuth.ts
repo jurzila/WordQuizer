@@ -8,12 +8,16 @@ export function useAuth() {
   const [email, setEmail] = useState<string | null>(null);
 
   const handleLogin = async (email: string, password: string) => {
-    const data = await login(email, password);
-    setTokenState(data.token);
-    setEmail(data.email);
-    setToken(data.token);
-    await AsyncStorage.setItem("token", data.token);
-    await AsyncStorage.setItem("email", data.email);
+    try {
+      const data = await login(email, password);
+      setTokenState(data.token);
+      setEmail(data.email);
+      setToken(data.token);
+      await AsyncStorage.setItem("token", data.token);
+      await AsyncStorage.setItem("email", data.email);
+    } catch (error) {
+      throw error;
+    }
   };
 
   const handleRegister = async (email: string, password: string) => {
@@ -35,17 +39,17 @@ export function useAuth() {
 
   useEffect(() => {
     Promise.all([
-        AsyncStorage.getItem('token'),
-        AsyncStorage.getItem('email')
+      AsyncStorage.getItem("token"),
+      AsyncStorage.getItem("email"),
     ]).then(([storedToken, storedEmail]) => {
-        if (storedToken) {
-            setTokenState(storedToken)
-            setToken(storedToken)
-        }
-        if (storedEmail) setEmail(storedEmail)
-        setIsLoading(false)
-    })
-}, [])
+      if (storedToken) {
+        setTokenState(storedToken);
+        setToken(storedToken);
+      }
+      if (storedEmail) setEmail(storedEmail);
+      setIsLoading(false);
+    });
+  }, []);
 
   return { token, email, isLoading, handleLogin, handleRegister, handleLogout };
 }
