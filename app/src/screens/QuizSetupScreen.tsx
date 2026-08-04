@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { useWordApp } from "../context/WordAppContext";
 import { useState } from "react";
 import { QuizStackParamList } from "../navigation/types";
@@ -52,7 +58,7 @@ export default function QuizSetupScreen() {
           </Text>
         </View>
       ) : (
-        <View style={sharedStyles.list}>
+        <ScrollView style={sharedStyles.list}>
           {collections.map((item) => {
             const isSelected = selectedIds.includes(item._id);
             return (
@@ -84,7 +90,7 @@ export default function QuizSetupScreen() {
               </TouchableOpacity>
             );
           })}
-        </View>
+        </ScrollView>
       )}
       <View style={styles.modeSelector}>
         <Text style={styles.modeSelectorLabel}>Flashcard direction</Text>
