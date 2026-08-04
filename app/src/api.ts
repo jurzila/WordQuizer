@@ -9,7 +9,6 @@ const authHeaders = (token: string) => ({
 let token = "";
 
 export const setToken = (newToken: string) => {
-  console.log("setting token:", newToken);
   token = newToken;
 };
 

@@ -8,9 +8,7 @@ export const getCollections = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    console.log("userId from token:", req.userId);
     const collections = await Collection.find({ userId: req.userId });
-    console.log("collections found:", collections.length);
     res.json(collections);
   } catch (error) {
     next(error);
