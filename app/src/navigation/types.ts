@@ -6,6 +6,6 @@ export type LessonsStackParamList = {
 
 export type QuizStackParamList = {
     QuizSetupScreen: undefined
-    QuizScreen: { collectionIds: string[] }
-    FlashcardScreen: { collectionIds: string[], mode: 'word' | 'translation' }
+    QuizScreen: { collectionIds: string[], wordLimit: number | 'all' }
+    FlashcardScreen: { collectionIds: string[], mode: 'word' | 'translation', wordLimit: number | 'all' }
 }

@@ -10,11 +10,14 @@ import { initialState, quizReducer } from "../reducers/quizReducer";
 
 export default function QuizScreen() {
   const route = useRoute<RouteProp<QuizStackParamList, "QuizScreen">>();
-  const { collectionIds } = route.params;
+  const { collectionIds, wordLimit } = route.params;
   const { words } = useWordApp();
-  const availableWords = words.filter((word) =>
+  const allWords = words.filter((word) =>
     collectionIds.includes(word.collectionId),
   );
+  const availableWords =
+    wordLimit === "all" ? allWords : allWords.slice(0, wordLimit);
+
   const [state, dispatch] = useReducer(quizReducer, initialState);
   const {
     wordPool,

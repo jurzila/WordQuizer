@@ -8,11 +8,14 @@ import { sharedStyles } from "../theme/sharedStyles";
 
 export default function FlashcardScreen() {
   const route = useRoute<RouteProp<QuizStackParamList, "FlashcardScreen">>();
-  const { collectionIds, mode } = route.params;
+  const { collectionIds, mode, wordLimit } = route.params;
   const { words } = useWordApp();
-  const availableWords = words.filter((word) =>
+  const allWords = words.filter((word) =>
     collectionIds.includes(word.collectionId),
   );
+  const availableWords =
+    wordLimit === "all" ? allWords : allWords.slice(0, wordLimit);
+
   const [state, dispatch] = useReducer(flashcardReducer, initialState);
   const { deck, flagged, current, isFlipped, known } = state;
 

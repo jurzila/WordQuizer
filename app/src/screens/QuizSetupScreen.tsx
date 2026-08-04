@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  TextInput,
 } from "react-native";
 import { useWordApp } from "../context/WordAppContext";
 import { useState } from "react";
@@ -18,6 +19,8 @@ export default function QuizSetupScreen() {
   const { collections } = useWordApp();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [mode, setMode] = useState<"word" | "translation">("word");
+  const [wordLimit, setWordLimit] = useState<number | "all">("all");
+  const [customLimit, setCustomLimit] = useState<number>(20);
   const navigation = useNavigation<NavProp>();
 
   function toggleCollection(selectedCollectionId: string) {
@@ -28,9 +31,16 @@ export default function QuizSetupScreen() {
     );
   }
 
+  const { words } = useWordApp();
+  const availableCount = words.filter((word) =>
+    selectedIds.includes(word.collectionId),
+  ).length;
+  const canUseCustom = availableCount >= 20;
+
   const startQuiz = () => {
     navigation.navigate("QuizScreen", {
       collectionIds: selectedIds,
+      wordLimit: wordLimit === "all" ? "all" : customLimit,
     });
   };
 
@@ -38,10 +48,13 @@ export default function QuizSetupScreen() {
     navigation.navigate("FlashcardScreen", {
       collectionIds: selectedIds,
       mode,
+      wordLimit: wordLimit === "all" ? "all" : customLimit,
     });
   };
 
   const hasSelection = selectedIds.length > 0;
+  const isValidLimit =
+    wordLimit === "all" || (customLimit >= 20 && customLimit <= availableCount);
 
   return (
     <View style={[sharedStyles.container, { alignItems: "stretch" }]}>
@@ -58,7 +71,7 @@ export default function QuizSetupScreen() {
           </Text>
         </View>
       ) : (
-        <ScrollView style={sharedStyles.list}>
+        <ScrollView contentContainerStyle={sharedStyles.list}>
           {collections.map((item) => {
             const isSelected = selectedIds.includes(item._id);
             return (
@@ -92,43 +105,118 @@ export default function QuizSetupScreen() {
           })}
         </ScrollView>
       )}
-      <View style={styles.modeSelector}>
-        <Text style={styles.modeSelectorLabel}>Flashcard direction</Text>
-        <View style={styles.modeRow}>
-          <TouchableOpacity
-            style={[
-              styles.modeButton,
-              mode === "word" && styles.modeButtonActive,
-            ]}
-            onPress={() => setMode("word")}
-          >
-            <Text
-              style={[
-                styles.modeButtonText,
-                mode === "word" && styles.modeButtonTextActive,
-              ]}
-            >
-              Word → Translation
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.modeButton,
-              mode === "translation" && styles.modeButtonActive,
-            ]}
-            onPress={() => setMode("translation")}
-          >
-            <Text
-              style={[
-                styles.modeButtonText,
-                mode === "translation" && styles.modeButtonTextActive,
-              ]}
-            >
-              Translation → Word
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      {hasSelection && (
+        <>
+          <View style={styles.modeSelector}>
+            <Text style={styles.modeSelectorLabel}>Flashcard direction</Text>
+            <View style={styles.modeRow}>
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  mode === "word" && styles.modeButtonActive,
+                ]}
+                onPress={() => setMode("word")}
+              >
+                <Text
+                  style={[
+                    styles.modeButtonText,
+                    mode === "word" && styles.modeButtonTextActive,
+                  ]}
+                >
+                  Word → Translation
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  mode === "translation" && styles.modeButtonActive,
+                ]}
+                onPress={() => setMode("translation")}
+              >
+                <Text
+                  style={[
+                    styles.modeButtonText,
+                    mode === "translation" && styles.modeButtonTextActive,
+                  ]}
+                >
+                  Translation → Word
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.modeSelector}>
+            <Text style={styles.modeSelectorLabel}>Word count</Text>
+            <View style={styles.modeRow}>
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  wordLimit === "all" && styles.modeButtonActive,
+                ]}
+                onPress={() => setWordLimit("all")}
+              >
+                <Text
+                  style={[
+                    styles.modeButtonText,
+                    wordLimit === "all" && styles.modeButtonTextActive,
+                  ]}
+                >
+                  All words
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  wordLimit !== "all" && styles.modeButtonActive,
+                ]}
+                onPress={() => setWordLimit(customLimit)}
+                disabled={!canUseCustom}
+              >
+                <Text
+                  style={[
+                    styles.modeButtonText,
+                    wordLimit !== "all" && styles.modeButtonTextActive,
+                  ]}
+                >
+                  Custom
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {!canUseCustom && hasSelection && (
+              <Text style={styles.warningText}>
+                Need at least 20 words for custom limit
+              </Text>
+            )}
+
+            {wordLimit !== "all" && (
+              <View style={styles.customInputRow}>
+                <Text style={styles.modeSelectorLabel}>
+                  Number of words (min 20)
+                </Text>
+                <TextInput
+                  style={[sharedStyles.input, styles.customInput]}
+                  value={customLimit.toString()}
+                  onChangeText={(text) => {
+                    const num = Number(text);
+                    setCustomLimit(num);
+                    setWordLimit(num);
+                  }}
+                  placeholder="20"
+                  keyboardType="numeric"
+                />
+                {customLimit < 20 && (
+                  <Text style={styles.warningText}>Minimum is 20 words</Text>
+                )}
+                {customLimit > availableCount && availableCount > 0 && (
+                  <Text style={styles.warningText}>
+                    Only {availableCount} words available
+                  </Text>
+                )}
+              </View>
+            )}
+          </View>
+        </>
+      )}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[
@@ -137,7 +225,7 @@ export default function QuizSetupScreen() {
             !hasSelection && styles.buttonDisabled,
           ]}
           onPress={startQuiz}
-          disabled={!hasSelection}
+          disabled={!hasSelection || !isValidLimit}
         >
           <Text style={sharedStyles.primaryButtonText}>Quiz</Text>
         </TouchableOpacity>
@@ -148,7 +236,7 @@ export default function QuizSetupScreen() {
             !hasSelection && styles.buttonDisabled,
           ]}
           onPress={startFlashcards}
-          disabled={!hasSelection}
+          disabled={!hasSelection || !isValidLimit}
         >
           <Text
             style={[
@@ -228,4 +316,8 @@ const styles = StyleSheet.create({
   modeButtonActive: { borderColor: "#2f6b3a", backgroundColor: "#eef6ef" },
   modeButtonText: { fontSize: 13, fontWeight: "500", color: "#888780" },
   modeButtonTextActive: { color: "#2f6b3a", fontWeight: "600" },
+  warningText: { fontSize: 12, color: "#854F0B", marginTop: 4 },
+
+  customInputRow: { marginTop: 10, gap: 6 },
+  customInput: { width: 100 },
 });
