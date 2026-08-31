@@ -8,7 +8,11 @@ import { authMiddleware } from "./middleware/auth";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGIN || '*',
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+}))
 app.use(express.json());
 app.use("/api/word", authMiddleware, wordRouter);
 app.use("/api/collection", authMiddleware, collectionRouter);
