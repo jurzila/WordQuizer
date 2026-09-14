@@ -1,5 +1,6 @@
 import Word from "../models/Word";
 import type { NextFunction, Request, Response } from "express";
+import { parseObjectIdParam } from "./utils";
 
 export const getWords = async (
   req: Request,
@@ -20,7 +21,11 @@ export const getWordsByCollection = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const collectionId = req.params.collectionId;
+    const collectionId = parseObjectIdParam(req.params.collectionId);
+     if(collectionId === null) {
+      res.status(404).json({ message: "Collection not found" });
+      return;
+    }
     const words = await Word.find({
       collectionId: collectionId,
       userId: req.userId,
@@ -62,9 +67,9 @@ export const deleteWord = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const id = req.params.id;
-    if (!id) {
-      res.status(400).json({ message: "Invalid id" });
+    const id = parseObjectIdParam(req.params.id);
+     if(id === null) {
+      res.status(404).json({ message: "Word not found" });
       return;
     }
     const deletedWord = await Word.findOneAndDelete({

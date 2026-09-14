@@ -1,0 +1,777 @@
+<title>WordQuizer Migration Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --ground:      #f6f6f1;
+    --surface:     #ffffff;
+    --surface-alt: #efefe8;
+    --ink:         #171c18;
+    --ink-soft:    #5b6159;
+    --ink-faint:   #8b9188;
+    --rule:        #e0e3d9;
+    --rule-strong: #c8ccc0;
+    --accent:      #2f6b3a;
+    --accent-bg:   #e9f1ea;
+    --warn:        #9c3a2f;
+    --warn-bg:     #f7ece9;
+    --gone:        #6b5a8f;
+    --gone-bg:     #efebf5;
+
+    --display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+    --body:    "Source Sans 3", -apple-system, "Segoe UI", sans-serif;
+    --mono:    "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #12150f;
+      --surface:     #1a1e18;
+      --surface-alt: #232821;
+      --ink:         #e9ece4;
+      --ink-soft:    #a2a99c;
+      --ink-faint:   #767d70;
+      --rule:        #2d332b;
+      --rule-strong: #454c42;
+      --accent:      #86c193;
+      --accent-bg:   #1e2b20;
+      --warn:        #e59a8c;
+      --warn-bg:     #2e211d;
+      --gone:        #b3a3d4;
+      --gone-bg:     #241f2e;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #12150f;
+    --surface:     #1a1e18;
+    --surface-alt: #232821;
+    --ink:         #e9ece4;
+    --ink-soft:    #a2a99c;
+    --ink-faint:   #767d70;
+    --rule:        #2d332b;
+    --rule-strong: #454c42;
+    --accent:      #86c193;
+    --accent-bg:   #1e2b20;
+    --warn:        #e59a8c;
+    --warn-bg:     #2e211d;
+    --gone:        #b3a3d4;
+    --gone-bg:     #241f2e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0 24px 96px;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* ---------- masthead ---------- */
+
+  header.masthead {
+    padding: 72px 0 40px;
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(38px, 6vw, 62px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    max-width: 62ch;
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ---------- the thesis strip ---------- */
+
+  .thesis {
+    margin: 40px 0 8px;
+    padding: 26px 28px;
+    background: var(--accent-bg);
+    border-left: 4px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .thesis p { margin: 0; max-width: 68ch; }
+  .thesis strong { color: var(--accent); }
+
+  /* ---------- sections ---------- */
+
+  section { margin-top: 64px; }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 27px;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+
+  .sec-note {
+    color: var(--ink-soft);
+    max-width: 66ch;
+    margin: 0 0 22px;
+    font-size: 15px;
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 17px;
+    margin: 34px 0 10px;
+    color: var(--ink);
+  }
+
+  /* ---------- tables ---------- */
+
+  .scroller {
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 620px;
+    font-size: 15px;
+  }
+
+  thead th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    background: var(--surface-alt);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--rule-strong);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  td.rn, td.web { width: 26%; }
+  td.rn code, td.web code { white-space: nowrap; }
+  td.why { color: var(--ink-soft); font-size: 14.5px; }
+
+  /* a row whose mapping hides a real behavioural change */
+  tr.trap td:first-child { box-shadow: inset 3px 0 0 var(--warn); }
+  tr.trap td.why { color: var(--warn); }
+
+  code, .mono {
+    font-family: var(--mono);
+    font-size: 0.87em;
+    background: var(--surface-alt);
+    padding: 1.5px 5px;
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
+  td.why code { background: transparent; padding: 0; }
+
+  .arrow { color: var(--ink-faint); font-family: var(--mono); }
+
+  /* ---------- callout ---------- */
+
+  .callout {
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn);
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .callout h3 { margin-top: 0; color: var(--warn); font-size: 16px; }
+  .callout p, .callout li { max-width: 66ch; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+
+  .gone-callout {
+    background: var(--gone-bg);
+    border-left: 4px solid var(--gone);
+  }
+  .gone-callout h3 { color: var(--gone); }
+
+  ul { padding-left: 20px; margin: 12px 0; }
+  li { margin-bottom: 7px; max-width: 68ch; }
+
+  /* ---------- status pills ---------- */
+
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2.5px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .pill.done    { background: var(--accent-bg); color: var(--accent); }
+  .pill.todo    { background: var(--surface-alt); color: var(--ink-soft); }
+  .pill.deleted { background: var(--gone-bg); color: var(--gone); }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-size: 14px;
+    color: var(--ink-faint);
+    max-width: 68ch;
+  }
+
+  a { color: var(--accent); }
+  a:focus-visible, tr:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">WordQuizer · Expo 54 → Vite 8 + React 19</div>
+    <h1>WordQuizer Migration Map</h1>
+    <p class="standfirst">
+      Every React Native construct in this codebase, and what it becomes on the web.
+      Rows with a red edge look like a rename and aren't — the behaviour changes underneath.
+    </p>
+  </header>
+
+  <div class="thesis">
+    <p>
+      React is a <strong>reconciler</strong>. It diffs element trees and has no idea what a screen is.
+      The drawing is done by a <strong>renderer</strong> plugged in underneath — <code>react-dom</code>
+      renders to DOM nodes, <code>react-native</code> to native view handles.
+    </p>
+    <p>
+      That single fact predicts the whole migration. Hooks, context, reducers, JSX and the component
+      model sit <em>above</em> the renderer and port untouched. Primitives, styling, events, storage
+      and navigation sit <em>below</em> it and get rewritten.
+    </p>
+  </div>
+
+  <!-- ============ COMPONENTS ============ -->
+  <section>
+    <h2>Primitives</h2>
+    <p class="sec-note">
+      The mechanical half. Most of these are a find-and-replace; the flagged ones aren't.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>React Native</th><th>Web</th><th>What actually changes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rn"><code>&lt;View&gt;</code></td>
+            <td class="web"><code>&lt;div&gt;</code></td>
+            <td class="why">Nothing, structurally.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>&lt;Text&gt;</code></td>
+            <td class="web"><code>&lt;p&gt; &lt;span&gt; &lt;h1&gt; &lt;label&gt;</code></td>
+            <td class="why">Not one element — pick by meaning. A label above an input should be
+              <code>&lt;label for&gt;</code>, which RN had no concept of. Text no longer has to be
+              wrapped at all.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>&lt;TextInput&gt;</code></td>
+            <td class="web"><code>&lt;input&gt; &lt;textarea&gt;</code></td>
+            <td class="why">Inside a <code>&lt;form&gt;</code> it submits on Enter. That's a feature —
+              but you must call <code>preventDefault()</code> or the page reloads.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>&lt;TouchableOpacity&gt;</code><br><code>&lt;Pressable&gt;</code></td>
+            <td class="web"><code>&lt;button&gt;</code></td>
+            <td class="why">A <code>&lt;button&gt;</code> inside a form defaults to
+              <code>type="submit"</code>. Anything that isn't the submit action needs
+              <code>type="button"</code>.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>&lt;ScrollView&gt;</code></td>
+            <td class="web"><code>&lt;div&gt;</code> + <code>overflow-y-auto</code></td>
+            <td class="why">Usually nothing — the page already scrolls. Only needed for a scrolling
+              panel inside a fixed shell.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>&lt;FlatList&gt;</code></td>
+            <td class="web"><code>&lt;ul&gt;</code> + <code>.map()</code></td>
+            <td class="why">You lose virtualisation. Fine at a few hundred rows; not fine at ten
+              thousand. This is the pagination conversation, deferred.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>&lt;Image source={{uri}}&gt;</code></td>
+            <td class="web"><code>&lt;img src&gt;</code></td>
+            <td class="why"><code>resizeMode="cover"</code> becomes CSS <code>object-cover</code>.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>&lt;Modal&gt;</code></td>
+            <td class="web"><code>&lt;dialog&gt;</code></td>
+            <td class="why">Native focus trapping and Esc-to-close, free.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>&lt;Switch&gt;</code></td>
+            <td class="web"><code>&lt;input type="checkbox"&gt;</code></td>
+            <td class="why"><code>onValueChange</code> → <code>onChange</code>, read
+              <code>e.target.checked</code>.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>&lt;ActivityIndicator&gt;</code></td>
+            <td class="web">— none —</td>
+            <td class="why">No built-in spinner. A CSS <code>animate-spin</code> ring, or nothing.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>&lt;SafeAreaView&gt;</code></td>
+            <td class="web"><code>env(safe-area-inset-*)</code></td>
+            <td class="why">Only matters for iOS Safari's home indicator. Often just droppable.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>&lt;KeyboardAvoidingView&gt;</code></td>
+            <td class="web">— none —</td>
+            <td class="why">Mobile browsers handle it. Delete the component.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ PROPS & EVENTS ============ -->
+  <section>
+    <h2>Props and events</h2>
+    <p class="sec-note">
+      Where most of the compile errors will come from, because the names are close enough to look right.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>React Native</th><th>Web</th><th>What actually changes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rn"><code>onPress</code></td>
+            <td class="web"><code>onClick</code></td>
+            <td class="why">It <em>bubbles</em>. A click inside a clickable card fires both handlers
+              unless you call <code>stopPropagation()</code>.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>onChangeText={t =&gt; …}</code></td>
+            <td class="web"><code>onChange={e =&gt; …}</code></td>
+            <td class="why">You get an event, not a string. Read
+              <code>e.target.value</code>. Easiest thing in the port to get silently wrong.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>secureTextEntry</code></td>
+            <td class="web"><code>type="password"</code></td>
+            <td class="why">Also unlocks password-manager save prompts.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>keyboardType="email-address"</code></td>
+            <td class="web"><code>type="email"</code></td>
+            <td class="why">Same mobile keyboard, plus free browser validation.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>keyboardType="numeric"</code></td>
+            <td class="web"><code>inputMode="numeric"</code></td>
+            <td class="why">Prefer <code>inputMode</code> to <code>type="number"</code> — no spinners,
+              no scroll-wheel edits, no locale surprises.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>editable={false}</code></td>
+            <td class="web"><code>readOnly</code> / <code>disabled</code></td>
+            <td class="why">Two different things: <code>readOnly</code> still submits and still
+              focuses, <code>disabled</code> does neither.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>multiline</code></td>
+            <td class="web"><code>&lt;textarea&gt;</code></td>
+            <td class="why">A different element, not a prop.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>style={[a, b]}</code></td>
+            <td class="web"><code>className="…"</code></td>
+            <td class="why">Array merge becomes string concatenation. Conditional styles want
+              <code>clsx</code> or a template literal.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>accessibilityLabel</code></td>
+            <td class="web"><code>aria-label</code></td>
+            <td class="why">Often unnecessary — real semantic elements carry their own name.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>testID</code></td>
+            <td class="web"><code>data-testid</code></td>
+            <td class="why">Straight rename.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn">— none —</td>
+            <td class="web"><code>autoComplete</code></td>
+            <td class="why">New surface with no RN analogue. Without
+              <code>autoComplete="email"</code> / <code>"current-password"</code>, password managers
+              don't work. Users notice.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn">— none —</td>
+            <td class="web"><code>htmlFor</code> / <code>id</code></td>
+            <td class="why">Also new. Wires a label to its input: screen readers announce it, and
+              clicking the label focuses the field.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ LAYOUT ============ -->
+  <section>
+    <h2>Layout defaults</h2>
+    <p class="sec-note">
+      Both use flexbox, so this looks like the easy part. It isn't — the <em>defaults</em> differ, and
+      wrong defaults fail silently rather than erroring.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>Property</th><th>RN default</th><th>CSS default → what to write</th></tr>
+        </thead>
+        <tbody>
+          <tr class="trap">
+            <td class="rn"><code>display</code></td>
+            <td class="web"><code>flex</code>, always</td>
+            <td class="why"><code>block</code>. <code>justify-center</code> and
+              <code>items-center</code> do <strong>nothing</strong> until you add
+              <code>flex</code>.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>flexDirection</code></td>
+            <td class="web"><code>column</code></td>
+            <td class="why"><code>row</code>. Every stacked RN layout needs an explicit
+              <code>flex-col</code>.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>flex: 1</code> on a root</td>
+            <td class="web">fills the screen</td>
+            <td class="why">Fills nothing — the parent has no height. Use
+              <code>min-h-screen</code> or <code>h-full</code>.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn">text properties</td>
+            <td class="web">never inherit</td>
+            <td class="why"><code>color</code>, <code>font-size</code>, <code>font-family</code> and
+              <code>line-height</code> <strong>cascade down</strong>. Set one on a wrapper and every
+              descendant moves. RN has no cascade at all.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>position</code></td>
+            <td class="web"><code>relative</code></td>
+            <td class="why"><code>static</code>. An absolutely-positioned child anchors to the nearest
+              positioned ancestor — so the parent needs an explicit <code>relative</code>.</td>
+          </tr>
+          <tr>
+            <td class="rn">numbers</td>
+            <td class="web">density-independent px</td>
+            <td class="why">Unitless CSS numbers mean nothing. Every value needs <code>px</code> or a
+              Tailwind class.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>shadow*</code>, <code>elevation</code></td>
+            <td class="web">two separate systems</td>
+            <td class="why">One <code>box-shadow</code>, or Tailwind's <code>shadow-*</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ STYLING ============ -->
+  <section>
+    <h2>StyleSheet → Tailwind v4</h2>
+    <p class="sec-note">
+      An RN style is an object of properties. A Tailwind class is one declaration. So one style object
+      becomes a list of classes, roughly one per property — written at the usage site, not in a
+      separate stylesheet module.
+    </p>
+
+    <h3>Declaring the palette</h3>
+    <p class="sec-note">
+      Tailwind v4 has no <code>tailwind.config.js</code>. Configuration moved into CSS. The
+      <code>--color-</code> prefix is the contract: declare <code>--color-primary</code> and you get
+      <code>bg-primary</code>, <code>text-primary</code> and <code>border-primary</code> generated for
+      you.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>Concern</th><th>Then</th><th>Now</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rn">Palette</td>
+            <td class="web"><code>theme/colors.ts</code></td>
+            <td class="why"><code>@theme { --color-*: … }</code> in <code>index.css</code></td>
+          </tr>
+          <tr>
+            <td class="rn">Spacing scale</td>
+            <td class="web"><code>theme/spacing.ts</code></td>
+            <td class="why">Built in. Tailwind's unit is 4px, so the class number is
+              <code>px / 4</code> — 16px is <code>p-4</code>.</td>
+          </tr>
+          <tr>
+            <td class="rn">Reusable styles</td>
+            <td class="web"><code>sharedStyles.ts</code></td>
+            <td class="why">A component, or <code>@apply</code>. Not a style object.</td>
+          </tr>
+          <tr>
+            <td class="rn">Off-scale value</td>
+            <td class="web">any number</td>
+            <td class="why">Brackets: <code>max-w-[400px]</code>, <code>mt-[6px]</code></td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>borderWidth: 1</code></td>
+            <td class="web">one property</td>
+            <td class="why">Two classes. <code>border</code> sets width; the colour defaults to
+              <code>currentColor</code> in v4, so without <code>border-border</code> you get a
+              near-black line.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <h3>The worked example</h3>
+      <p><code>{ flex: 1, backgroundColor: "#fafaf8", justifyContent: "center", alignItems: "center", padding: 16 }</code></p>
+      <p class="mono" style="background:transparent;padding:0;font-size:14px;">
+        min-h-screen flex flex-col justify-center items-center bg-background p-4
+      </p>
+      <p>Five properties, seven classes. The two extras — <code>flex</code> and
+      <code>flex-col</code> — are the RN defaults you never had to write. The
+      <code>min-h-screen</code> is <code>flex: 1</code> refusing to mean the same thing.</p>
+    </div>
+  </section>
+
+  <!-- ============ PLATFORM APIs ============ -->
+  <section>
+    <h2>Platform APIs</h2>
+    <p class="sec-note">
+      Below the component layer. This is where the migration stops being mechanical.
+    </p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>React Native</th><th>Web</th><th>What actually changes</th></tr>
+        </thead>
+        <tbody>
+          <tr class="trap">
+            <td class="rn"><code>AsyncStorage</code></td>
+            <td class="web"><code>localStorage</code></td>
+            <td class="why"><strong>Async becomes sync.</strong> The largest single consequence in this
+              codebase — it deleted a loading state, a module-level cache and a route-guard problem.
+              Same 5MB-ish quota; both throw when the browser blocks site data.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>React Navigation</code></td>
+            <td class="web">URL router</td>
+            <td class="why">An in-memory stack becomes the address bar. Params must serialise to
+              strings; refresh and Back now work, and now have to be <em>designed for</em>.</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>Animated</code></td>
+            <td class="web">CSS transitions</td>
+            <td class="why">No <code>Animated.Value</code>, no <code>interpolate</code>, no
+              <code>createAnimatedComponent</code>. A class swap plus <code>transition-colors</code>
+              replaces the whole file — but <code>onAnimationEnd</code> replaces the completion
+              callback, and it fires per-property.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>Dimensions.get()</code></td>
+            <td class="web">CSS media queries</td>
+            <td class="why">Prefer <code>sm:</code>/<code>md:</code> classes over reading width in JS.
+              <code>matchMedia</code> when you truly need it in JS.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>Alert.alert()</code></td>
+            <td class="web"><code>&lt;dialog&gt;</code></td>
+            <td class="why"><code>window.confirm</code> exists but blocks the thread and can't be
+              styled.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>Linking.openURL()</code></td>
+            <td class="web"><code>&lt;a href&gt;</code></td>
+            <td class="why">Use a real anchor — middle-click, open-in-new-tab and copy-link all come
+              with it.</td>
+          </tr>
+          <tr>
+            <td class="rn"><code>expo-crypto</code></td>
+            <td class="web"><code>crypto.randomUUID()</code></td>
+            <td class="why">Built into the browser. Secure contexts only (HTTPS or localhost).</td>
+          </tr>
+          <tr class="trap">
+            <td class="rn"><code>process.env.EXPO_PUBLIC_*</code></td>
+            <td class="web"><code>import.meta.env.VITE_*</code></td>
+            <td class="why">No <code>process</code> in Vite. The prefix is mandatory, and the variable
+              must be renamed in Netlify too or the deploy silently uses the fallback URL.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ DELETIONS ============ -->
+  <section>
+    <h2>Code that doesn't get ported — it gets deleted</h2>
+    <p class="sec-note">
+      A real share of any codebase exists to work around its platform. Change the platform and that
+      code has no job. Budget for the migration <em>shrinking</em> the app.
+    </p>
+
+    <div class="gone-callout callout">
+      <h3>Gone from WordQuizer</h3>
+      <ul>
+        <li><code>localStore.ts</code> — was already dead; nothing imported it.</li>
+        <li>The <code>let token</code> module variable in <code>api.ts</code> — a synchronous cache in
+          front of an asynchronous store. The store is synchronous now.</li>
+        <li><code>isLoading</code> in <code>useAuth</code> — encoded "haven't finished reading storage
+          yet". There is no such moment.</li>
+        <li><code>theme/spacing.ts</code> — Tailwind ships a spacing scale.</li>
+        <li><code>theme/colors.ts</code> — superseded by the <code>@theme</code> block, which becomes
+          the single source of truth.</li>
+        <li><code>theme/sharedStyles.ts</code> — utility classes replace style objects.</li>
+        <li>The three <code>navigation/</code> files — file-based routes replace them.</li>
+        <li>Most of <code>QuizCard.tsx</code> — the <code>Animated</code> machinery is a CSS
+          transition.</li>
+      </ul>
+      <p><strong>26 files in, roughly 20 out.</strong></p>
+    </div>
+  </section>
+
+  <!-- ============ NEW PROBLEMS ============ -->
+  <section>
+    <h2>Problems you didn't have before</h2>
+    <p class="sec-note">
+      The web gives you refresh, Back, deep links and bookmarks for free. Free capabilities come with
+      obligations.
+    </p>
+
+    <div class="callout">
+      <h3>Component identity</h3>
+      <p>Navigating <code>/lessons/abc</code> → <code>/lessons/xyz</code> is the <em>same</em>
+      component in the <em>same</em> tree position. React reconciles by position and type, not by
+      props, so it keeps the existing instance and all its state — half-typed form fields included.
+      Under React Navigation these were two stack entries and two instances, so the bug couldn't
+      exist.</p>
+      <p>Fix: <code>&lt;AddWordForm key={collectionId} /&gt;</code>. A changed <code>key</code> makes
+      React unmount and remount, and state that has nowhere to live can't go stale.</p>
+    </div>
+
+    <div class="callout">
+      <h3>Params have to survive a URL</h3>
+      <p>These were plain JS objects in an in-memory stack:</p>
+      <p class="mono" style="background:transparent;padding:0;font-size:14px;">
+        { collectionIds: string[], wordLimit: number | 'all', mode: 'word' | 'translation' }
+      </p>
+      <p>A URL holds strings. <code>?collectionIds=a&amp;collectionIds=b&amp;wordLimit=all</code> is
+      the wire format, and parsing it back into those types is now your problem — TanStack Router's
+      <code>validateSearch</code> is the place to put it. It also means a user can hand-edit the URL,
+      so parsing has to reject nonsense rather than trust it.</p>
+    </div>
+
+    <div class="callout">
+      <h3>State changes don't re-run route guards</h3>
+      <p>Guards run on navigation. Setting <code>token</code> to <code>null</code> on logout doesn't
+      move the browser anywhere — you have to navigate explicitly. The same applies after a successful
+      login.</p>
+    </div>
+
+    <div class="callout">
+      <h3>Everything a browser does that a phone didn't</h3>
+      <ul>
+        <li>Hover states now exist and need designing.</li>
+        <li>Text is selectable and right-clickable.</li>
+        <li>Enter submits forms; Escape closes dialogs; Tab order is real and needs to make sense.</li>
+        <li>The user can refresh mid-quiz. What happens to the deck?</li>
+        <li>Two tabs can be open on the same account at once.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ STATUS ============ -->
+  <section>
+    <h2>File-by-file status</h2>
+    <p class="sec-note">Where the port stands in <code>web/</code>.</p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>File</th><th>Status</th><th>Note</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="rn"><code>types.ts</code></td><td class="web"><span class="pill done">ported</span></td><td class="why">Untouched but for <code>import type</code>.</td></tr>
+          <tr><td class="rn"><code>utils/shuffle.ts</code></td><td class="web"><span class="pill done">ported</span></td><td class="why">Untouched.</td></tr>
+          <tr><td class="rn"><code>reducers/*.ts</code></td><td class="web"><span class="pill done">ported</span></td><td class="why">Untouched. Pure logic above the renderer.</td></tr>
+          <tr><td class="rn"><code>hooks/useWords.ts</code></td><td class="web"><span class="pill done">ported</span></td><td class="why">Dropped the token argument; clears state when logged out.</td></tr>
+          <tr><td class="rn"><code>hooks/useCollections.ts</code></td><td class="web"><span class="pill done">ported</span></td><td class="why">Same.</td></tr>
+          <tr><td class="rn"><code>api.ts</code></td><td class="web"><span class="pill done">ported</span></td><td class="why">Env var + token now read from storage per request.</td></tr>
+          <tr><td class="rn"><code>hooks/useAuth.ts</code></td><td class="web"><span class="pill done">ported</span></td><td class="why">Rewritten on <code>localStorage</code>; lost <code>isLoading</code>.</td></tr>
+          <tr><td class="rn"><code>storage.ts</code></td><td class="web"><span class="pill done">new</span></td><td class="why">Replaces <code>localStore.ts</code>, with a reason to exist.</td></tr>
+          <tr><td class="rn"><code>context/WordAppContext.tsx</code></td><td class="web"><span class="pill done">ported</span></td><td class="why"><code>isLoading</code> removed from the contract.</td></tr>
+          <tr><td class="rn"><code>routes/__root.tsx</code></td><td class="web"><span class="pill todo">in progress</span></td><td class="why">Layout shell + <code>&lt;Outlet /&gt;</code>.</td></tr>
+          <tr><td class="rn"><code>routes/login.tsx</code></td><td class="web"><span class="pill todo">in progress</span></td><td class="why">The <code>AuthScreen</code> port.</td></tr>
+          <tr><td class="rn"><code>routes/index.tsx</code></td><td class="web"><span class="pill todo">in progress</span></td><td class="why">Placeholder home + <code>beforeLoad</code> guard.</td></tr>
+          <tr><td class="rn"><code>LessonsScreen</code>, <code>LessonDetails</code>, <code>AddWord</code></td><td class="web"><span class="pill todo">session 2</span></td><td class="why">Where <code>key</code> and typed route params get real.</td></tr>
+          <tr><td class="rn"><code>QuizSetup</code>, <code>Quiz</code>, <code>QuizCard</code></td><td class="web"><span class="pill todo">session 3</span></td><td class="why">Search-param validation and the <code>Animated</code> rewrite.</td></tr>
+          <tr><td class="rn"><code>Flashcard</code>, <code>Profile</code>, <code>GlobalFeedback</code></td><td class="web"><span class="pill todo">session 4</span></td><td class="why">—</td></tr>
+          <tr><td class="rn"><code>localStore.ts</code></td><td class="web"><span class="pill deleted">deleted</span></td><td class="why">Dead before the migration started.</td></tr>
+          <tr><td class="rn"><code>theme/*.ts</code></td><td class="web"><span class="pill deleted">at cutover</span></td><td class="why">Still imported by <code>app/</code>. Goes when <code>app/</code> goes.</td></tr>
+          <tr><td class="rn"><code>navigation/*.tsx</code></td><td class="web"><span class="pill deleted">superseded</span></td><td class="why">File-based routes.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Versions this was written against: React 19.2 · Vite 8 · Tailwind 4.3 · TanStack Router 1.170 ·
+    from Expo 54 / React Native 0.81. Tailwind v3 and v4 documentation differ substantially — check
+    which one you're reading.
+  </footer>
+
+</div>

@@ -47,3 +47,7 @@ backend/.env
 # app
 app/.expo/
 app/.env
+
+# web
+web/.env*
+!web/.env.example

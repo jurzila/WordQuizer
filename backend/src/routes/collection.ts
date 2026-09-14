@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createCollection,
   deleteCollection,
+  getCollection,
   getCollections,
   updateCollection,
 } from "../controllers/collectionController";
@@ -9,6 +10,7 @@ import {
 const collectionRouter = Router();
 collectionRouter.get("/", getCollections);
 collectionRouter.post("/", createCollection);
+collectionRouter.get("/:collectionId", getCollection);
 collectionRouter.put("/:collectionId", updateCollection);
 collectionRouter.delete("/:collectionId", deleteCollection);
 

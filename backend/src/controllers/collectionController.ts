@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import Collection from "../models/Collection";
 import Word from "../models/Word";
+import { parseObjectIdParam } from "./utils";
 
 export const getCollections = async (
   req: Request,
@@ -10,6 +11,28 @@ export const getCollections = async (
   try {
     const collections = await Collection.find({ userId: req.userId });
     res.json(collections);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getCollection = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const _id = parseObjectIdParam(req.params.collectionId);
+    if(_id === null) {
+      res.status(404).json({ message: "Collection not found" });
+      return;
+    }
+    const collection = await Collection.findOne({ _id, userId: req.userId });
+    if (!collection) {
+      res.status(404).json({ message: "Collection not found" });
+      return;
+    }
+    res.json(collection);
   } catch (error) {
     next(error);
   }
@@ -39,7 +62,11 @@ export const deleteCollection = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const collectionId = req.params.collectionId;
+    const collectionId = parseObjectIdParam(req.params.collectionId);
+    if(collectionId === null) {
+      res.status(404).json({ message: "Collection not found" });
+      return;
+    }
     const collection = await Collection.findOne({
       _id: collectionId,
       userId: req.userId,
@@ -67,9 +94,13 @@ export const updateCollection = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const collectionId = req.params.id;
+    const collectionId = parseObjectIdParam(req.params.collectionId);
+    if(collectionId === null) {
+      res.status(404).json({ message: "Collection not found" });
+      return;
+    }
     const name = req.body.name;
-    if (!name || !collectionId) {
+    if (!name) {
       res.status(400).json({ message: "Invalid input" });
       return;
     }
