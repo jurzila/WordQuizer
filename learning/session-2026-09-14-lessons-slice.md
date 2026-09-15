@@ -223,9 +223,18 @@ real requests so the route table and the controllers have to agree. Decide there
 mocked or `mongodb-memory-server` runs for real, and note that the seam under test (param names)
 doesn't require a database at all.
 
-**Then lesson create / rename / delete** — the mutation side of the slice. Mutations have no
-`loader`, so the new question is how route data refreshes after a write: `router.invalidate()` and
-the caching model. That's what the Data Loading reading covers, so read it first.
+**➤ Then, before any mutation code: reconcile loaders vs `WordAppContext`.** Lesson data now lives
+in two places that don't talk to each other — the route loaders, and `words`/`collections` plus the
+global `loading`/`error` banner in context. Nothing syncs them, and the first mutation writes to data
+both claim to own, so the context copy goes stale on screen. Three options to argue through: loaders
+own server data and context keeps only auth (fewest moving parts); context stays the cache and
+loaders seed it; or add TanStack Query and let the router coordinate. `handleAddWord` and friends
+need rewriting to match whichever wins, so deciding *after* the mutations are written means writing
+them twice.
+
+**Then lesson create / rename / delete** — the mutation side of the slice, on top of that decision.
+Mutations have no `loader`, so the new mechanism is `router.invalidate()` and the caching model.
+That's what the Data Loading reading covers, so read it first.
 
 ## Reference updates
 
