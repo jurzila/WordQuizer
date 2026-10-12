@@ -1,6 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import type { Collection } from "../types";
 import { useState } from "react";
+import Button from "./ui/Button";
+import TextButton from "./ui/TextButton";
+import TextField from "./ui/TextField";
+import ErrorMessage from "./ui/ErrorMessage";
+import Page from "./ui/Page";
+import PageHeader from "./ui/PageHeader";
+import Card from "./ui/Card";
+import EmptyState from "./ui/EmptyState";
+import FormActions from "./ui/FormActions";
 
 type LessonsPageProps = {
   collections: Collection[];
@@ -88,7 +97,7 @@ export default function LessonsPage({
 
     if (mode === "confirmDelete") {
       return (
-        <div className="bg-danger-bg rounded-xl py-3.5 px-4 border border-danger-border">
+        <Card tone="danger">
           <p className="text-base font-semibold text-text-primary">
             Delete “{item.name}”?
           </p>
@@ -96,72 +105,64 @@ export default function LessonsPage({
             Its words will be deleted too. This cannot be undone.
           </p>
 
-          {error && <p className="text-sm text-danger mt-2">{error}</p>}
+          {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <div className="flex flex-row justify-end gap-2 mt-3">
-            <button
-              type="button"
+          <FormActions>
+            <Button
+              variant="secondary"
               onClick={cancelRowMode}
               disabled={isSubmitting}
-              className="py-2.5 px-4 rounded-md border border-borderInput text-md font-medium text-text-secondary disabled:opacity-50"
             >
               Cancel
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="danger"
               onClick={() => confirmDelete(item._id)}
               disabled={isSubmitting}
-              className="py-2.5 px-4 rounded-md bg-danger text-surface text-md font-semibold disabled:opacity-50"
             >
               {isSubmitting ? "Deleting…" : "Delete"}
-            </button>
-          </div>
-        </div>
+            </Button>
+          </FormActions>
+        </Card>
       );
     }
 
     if (mode === "rename") {
       return (
-        <div className="bg-surface rounded-xl py-3.5 px-4 border border-border">
+        <Card>
           <form
             onSubmit={(e) => submitRename(e, item._id)}
             className="flex flex-row items-center gap-2"
           >
-            <label htmlFor={`rename-${item._id}`} className="sr-only">
-              Lesson name
-            </label>
-            <input
+            <TextField
               id={`rename-${item._id}`}
-              className="flex-1 min-w-0 border border-borderInput rounded-md py-2.5 px-3 text-base bg-surface focus:border-primary focus:outline-none"
+              label="Lesson name"
+              labelHidden
+              className="flex-1 min-w-0"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               required
               autoFocus
             />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="py-1 px-1.5 text-sm font-semibold text-primary disabled:opacity-50"
-            >
+            <TextButton type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Saving…" : "Save"}
-            </button>
-            <button
-              type="button"
+            </TextButton>
+            <TextButton
+              tone="muted"
               onClick={cancelRowMode}
               disabled={isSubmitting}
-              className="py-1 px-1.5 text-sm font-medium text-text-muted disabled:opacity-50"
             >
               Cancel
-            </button>
+            </TextButton>
           </form>
 
-          {error && <p className="text-sm text-danger mt-2">{error}</p>}
-        </div>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+        </Card>
       );
     }
 
     return (
-      <div className="bg-surface rounded-xl py-3.5 px-4 border border-border">
+      <Card>
         <div className="flex flex-row items-center justify-between gap-2">
           <Link
             to="/lessons/$collectionId"
@@ -170,107 +171,79 @@ export default function LessonsPage({
           >
             {item.name}
           </Link>
-          <button
-            type="button"
-            onClick={() => startRename(item)}
-            className="py-1 px-1.5 text-sm font-medium text-text-muted"
-          >
+          <TextButton tone="muted" onClick={() => startRename(item)}>
             Rename
-          </button>
-          <button
-            type="button"
-            onClick={() => startDelete(item._id)}
-            className="py-1 px-1.5 text-sm font-medium text-danger"
-          >
+          </TextButton>
+          <TextButton tone="danger" onClick={() => startDelete(item._id)}>
             Delete
-          </button>
+          </TextButton>
         </div>
-      </div>
+      </Card>
     );
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="mx-auto w-full max-w-screen-sm">
-        <div className="flex flex-row justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold text-text-primary">Lessons</h1>
-          {!isCreating && (
-            <button
-              type="button"
-              onClick={() => setIsCreating(true)}
-              className="py-2.5 px-4 rounded-md bg-primary text-surface text-md font-semibold"
-            >
-              + New lesson
-            </button>
-          )}
-        </div>
+    <Page>
+      <PageHeader
+        title="Lessons"
+        action={
+          !isCreating && (
+            <Button onClick={() => setIsCreating(true)}>+ New lesson</Button>
+          )
+        }
+      />
 
-        {isCreating && (
-          <div className="bg-surface rounded-xl p-4 mb-4 border border-border">
-            <form onSubmit={submitCreate}>
-              <label
-                className="block text-sm font-medium text-text-secondary mb-1.5"
-                htmlFor="name"
-              >
-                Lesson name
-              </label>
-              <input
-                id="name"
-                className="w-full border border-borderInput rounded-md py-2.5 px-3 text-base bg-surface focus:border-primary focus:outline-none"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
+      {isCreating && (
+        <Card className="mb-4">
+          <form onSubmit={submitCreate}>
+            <TextField
+              id="lesson-name"
+              label="Lesson name"
+              className="w-full"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setError(null);
+              }}
+              placeholder="e.g. Greetings"
+              required
+              autoFocus
+            />
+
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+
+            <FormActions>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setName("");
                   setError(null);
+                  setIsCreating(false);
                 }}
-                placeholder="e.g. Greetings"
-                required
-                autoFocus
-              />
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Saving…" : "Save"}
+              </Button>
+            </FormActions>
+          </form>
+        </Card>
+      )}
 
-              {error && <p className="text-sm text-danger mt-2">{error}</p>}
-
-              <div className="flex flex-row justify-end gap-2 mt-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setName("");
-                    setError(null);
-                    setIsCreating(false);
-                  }}
-                  disabled={isSubmitting}
-                  className="py-2.5 px-4 rounded-md border border-borderInput text-md font-medium text-text-secondary disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="py-2.5 px-4 rounded-md bg-primary text-surface text-md font-semibold disabled:opacity-50"
-                >
-                  {isSubmitting ? "Saving…" : "Save"}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {collections.length === 0 && !isCreating ? (
-          <div className="flex flex-col items-center py-10">
-            <p className="text-base font-semibold text-text-primary mb-1">
-              No lessons yet.
-            </p>
-            <p className="text-md text-text-muted">
-              Create one to start adding words.
-            </p>
-          </div>
-        ) : (
-          <ul className="flex flex-col gap-2.5 pb-6">
-            {collections.map((item) => (
-              <li key={item._id}>{renderRow(item)}</li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
+      {collections.length === 0 && !isCreating ? (
+        <EmptyState
+          title="No lessons yet."
+          message="Create one to start adding words."
+        />
+      ) : (
+        <ul className="flex flex-col gap-2.5 pb-6">
+          {collections.map((item) => (
+            <li key={item._id}>{renderRow(item)}</li>
+          ))}
+        </ul>
+      )}
+    </Page>
   );
 }

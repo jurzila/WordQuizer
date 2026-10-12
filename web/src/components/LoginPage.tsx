@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useWordApp } from "../context/WordAppContext";
 import { useNavigate } from "@tanstack/react-router";
+import Button from "./ui/Button";
+import TextField from "./ui/TextField";
+import ErrorMessage from "./ui/ErrorMessage";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -16,15 +19,12 @@ export default function LoginPage() {
     try {
       if (isRegistering) {
         await handleRegister(email.trim(), password.trim());
-        setEmail("");
-        setPassword("");
-        navigate({ to: "/" });
       } else {
         await handleLogin(email.trim(), password.trim());
-        setEmail("");
-        setPassword("");
-        navigate({ to: "/" });
       }
+      setEmail("");
+      setPassword("");
+      navigate({ to: "/" });
     } catch (e) {
       console.error(e);
       setError("Invalid email or password");
@@ -33,8 +33,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className="bg-surface border border-border rounded-2xl p-6 w-full max-w-100">
-        <h1 className="text-[28px] font-semibold text-text-primary mb-1">
+      <div className="bg-surface border border-border rounded-xl p-6 w-full max-w-100">
+        <h1 className="text-2xl font-semibold text-text-primary mb-1">
           WordQuizer
         </h1>
         <p className="text-md text-text-muted mb-6">
@@ -42,14 +42,11 @@ export default function LoginPage() {
         </p>
 
         <form onSubmit={handleSubmit}>
-          <label
-            className="block text-sm font-medium text-text-secondary mb-1.5"
-            htmlFor="email"
-          >
-            Email
-          </label>
-          <input
-            className="w-full border border-borderInput rounded-md py-2.5 px-3 text-base bg-surface focus:border-primary focus:outline-none"
+          <TextField
+            id="email"
+            label="Email"
+            type="email"
+            className="w-full"
             value={email}
             autoComplete="email"
             onChange={(e) => {
@@ -57,49 +54,37 @@ export default function LoginPage() {
               setError(null);
             }}
             placeholder="example@email.com"
-            type="email"
-            id="email"
           />
 
-          <label
-            className="block text-sm font-medium text-text-secondary mb-1.5 mt-4"
-            htmlFor="password"
-          >
-            Password
-          </label>
-          <input
-            className="w-full border border-borderInput rounded-md py-2.5 px-3 text-base bg-surface focus:border-primary focus:outline-none"
-            value={password}
-            autoComplete="current-password"
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError(null);
-            }}
-            placeholder="password"
-            type="password"
-            id="password"
-          />
+          <div className="mt-4">
+            <TextField
+              id="password"
+              label="Password"
+              type="password"
+              className="w-full"
+              value={password}
+              autoComplete={isRegistering ? "new-password" : "current-password"}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(null);
+              }}
+              placeholder="password"
+            />
+          </div>
 
-          {error && (
-            <div className="bg-danger-bg border border-danger-border rounded-lg p-3 mt-3">
-              <p className="text-sm text-danger">{error}</p>
-            </div>
-          )}
+          {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <button
-            className="w-full bg-primary py-2.5 px-4 rounded-md text-surface font-semibold text-md mt-5"
-            type="submit"
-          >
+          <Button type="submit" className="w-full mt-5">
             {isRegistering ? "Create account" : "Sign in"}
-          </button>
+          </Button>
 
           <button
+            type="button"
             className="w-full mt-4 text-center text-sm text-text-muted"
             onClick={() => {
               setIsRegistering(!isRegistering);
               setError(null);
             }}
-            type="button"
           >
             {isRegistering
               ? "Already have an account? "

@@ -21,7 +21,7 @@ describe("LessonDetailPage", () => {
   it("shows the empty state when there are no words", () => {
     render(<LessonDetailPage collection={collection} words={[]} />);
 
-    expect(screen.getByText("No words in lesson yet")).toBeInTheDocument();
+    expect(screen.getByText("No words in lesson yet.")).toBeInTheDocument();
     expect(screen.getByText("Add words.")).toBeInTheDocument();
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
   });
