@@ -13,9 +13,9 @@ import FormActions from "./ui/FormActions";
 
 type LessonsPageProps = {
   collections: Collection[];
-  onCreate: (name: string) => Promise<void>;
-  onRename: (name: string, collectionId: string) => Promise<void>;
-  onDelete: (collectionId: string) => Promise<void>;
+  onCreate: (name: string) => Promise<unknown>;
+  onRename: (name: string, collectionId: string) => Promise<unknown>;
+  onDelete: (collectionId: string) => Promise<unknown>;
 };
 
 type RowMode = { id: string; mode: "rename" | "confirmDelete" } | null;

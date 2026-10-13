@@ -1,0 +1,262 @@
+<title>Loader to Query Talk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Layout: one reading column; a run-of-show rail with minute marks down the left on wide screens, stacked on phones. */
+  :root {
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --border: #e6e4da;
+    --fg: #1a1a18;
+    --fg-2: #5f5e5a;
+    --muted: #888780;
+    --accent: #2f6b3a;
+    --accent-soft: #eef6ef;
+    --danger: #a32d2d;
+    --danger-soft: #fcebeb;
+    --code-bg: #f3f2ec;
+    --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161714; --surface: #1e1f1b; --border: #34352f; --fg: #ecebe4; --fg-2: #b5b3aa;
+      --muted: #8d8b82; --accent: #7cc48a; --accent-soft: #1f2d21; --danger: #f08b8b;
+      --danger-soft: #2f1c1c; --code-bg: #232420; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161714; --surface: #1e1f1b; --border: #34352f; --fg: #ecebe4; --fg-2: #b5b3aa;
+    --muted: #8d8b82; --accent: #7cc48a; --accent-soft: #1f2d21; --danger: #f08b8b;
+    --danger-soft: #2f1c1c; --code-bg: #232420; color-scheme: dark;
+  }
+
+  body { background: var(--bg); color: var(--fg); font: 16px/1.55 var(--font-body); }
+  .wrap { max-width: 860px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; }
+
+  header { display: grid; gap: 10px; margin-bottom: 36px; }
+  .eyebrow { font: 600 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  h1 { font: 700 clamp(28px, 5vw, 40px)/1.1 var(--font-display); margin: 0; text-wrap: balance; }
+  .lede { color: var(--fg-2); max-width: 62ch; margin: 0; }
+  .thesis { margin: 8px 0 0; padding: 14px 16px; background: var(--accent-soft); border-radius: 8px; font-weight: 600; max-width: 62ch; }
+
+  h2 { font: 700 22px/1.2 var(--font-display); margin: 0; text-wrap: balance; }
+  h3 { font: 600 15px/1.3 var(--font-body); margin: 0; }
+  p { margin: 0; }
+
+  .show { display: grid; gap: 28px; }
+  .beat { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .time { font: 600 13px/1.4 var(--font-mono); color: var(--accent); font-variant-numeric: tabular-nums; }
+  .time span { display: block; color: var(--muted); font-weight: 400; }
+  .body { display: grid; gap: 12px; min-width: 0; }
+  .say { color: var(--fg-2); max-width: 65ch; }
+  ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+  li { max-width: 65ch; }
+
+  code { font: 13.5px/1.5 var(--font-mono); background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  pre { margin: 0; background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; }
+  pre code { background: none; padding: 0; font-size: 13px; }
+  .cap { font: 600 11px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .c { color: var(--muted); }
+  .k { color: var(--accent); font-weight: 600; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font: 600 12px/1.3 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { color: var(--fg-2); }
+
+  .traps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .trap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .trap h3 { color: var(--danger); }
+  .trap p { color: var(--fg-2); font-size: 15px; }
+
+  .qa { display: grid; gap: 14px; }
+  .qa div { display: grid; gap: 3px; }
+  .qa dt { font-weight: 600; }
+  .qa dd { margin: 0; color: var(--fg-2); max-width: 65ch; }
+
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 640px) {
+    .beat { grid-template-columns: 1fr; gap: 8px; }
+    .pair, .traps { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">WordQuizer · 5-minute talk · 12–13 Oct 2026</div>
+    <h1>From route loaders to a query cache</h1>
+    <p class="lede">How lesson create, rename and delete moved from <code>router.invalidate()</code> to TanStack Query in two sessions, and what broke along the way.</p>
+    <p class="thesis">The router caches by URL. Query caches by data. Once two screens show the same data, you want the second one.</p>
+  </header>
+
+  <section class="show" aria-label="Run of show">
+
+    <article class="beat">
+      <div class="time">0:00<span>30 s</span></div>
+      <div class="body">
+        <h2>The problem: who owns server data?</h2>
+        <p class="say">We had two sources of truth. Route loaders fetched lessons, and a global <code>WordAppContext</code> also held <code>words</code> and <code>collections</code>.</p>
+        <ul>
+          <li>A grep showed nothing read the context copies. Both hooks still fetched on every page load.</li>
+          <li>Fix: delete them. Context now holds only auth: <code>token</code>, <code>email</code> and the login, register and logout handlers.</li>
+          <li>Context earns its place when a hook has state that must be a <em>single instance</em>. Data fetching didn't need that.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="beat">
+      <div class="time">0:30<span>75 s</span></div>
+      <div class="body">
+        <h2>Stage 1: loader + <code>router.invalidate()</code></h2>
+        <pre><code><span class="k">loader</span>: () =&gt; getCollections(),
+
+<span class="k">const</span> handleCreate = <span class="k">async</span> (name: string) =&gt; {
+  <span class="k">await</span> createCollection(name);   <span class="c">// 1. the write lands</span>
+  <span class="k">await</span> router.invalidate();      <span class="c">// 2. loaders re-run, list is fresh</span>
+};</code></pre>
+        <ul>
+          <li><strong>The router only sees navigations, not fetches.</strong> A POST in a click handler doesn't reach its cache, so <code>invalidate()</code> tells it the data changed.</li>
+          <li>Both <code>await</code>s are needed. Without the first, the refetch can beat the POST. Without the second, the form closes and the old list flashes.</li>
+          <li>Refetching beats <code>setState(prev =&gt; [...prev, item])</code>: the server may sort, trim or reject, and a local copy drifts.</li>
+          <li><strong>Limit:</strong> the router cache is keyed by <em>route match</em>, so <code>invalidate()</code> re-runs every matched loader. That's all or nothing.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="beat">
+      <div class="time">1:45<span>45 s</span></div>
+      <div class="body">
+        <h2>Stage 2: key the cache by data</h2>
+        <p class="say">A query key is an array that names a piece of server data. Invalidation matches by prefix.</p>
+        <pre><code><span class="c">// src/queries.ts — one definition, shared by loader and component</span>
+<span class="k">export const</span> collectionsQuery = queryOptions({
+  queryKey: [<span class="k">"collections"</span>],
+  queryFn: getCollections,
+});</code></pre>
+        <ul>
+          <li><code>["collections"]</code> matches <code>["collections", id]</code> and <code>["collections", id, "words"]</code> too. Pass <code>exact: true</code> or design flatter keys when you don't want that.</li>
+          <li>The Java version is Spring's <code>@CacheEvict</code>. <code>router.invalidate()</code> works like <code>allEntries = true</code>.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="beat">
+      <div class="time">2:30<span>60 s</span></div>
+      <div class="body">
+        <h2>Wiring: the router warms, the component subscribes</h2>
+        <div class="pair">
+          <div>
+            <div class="cap">main.tsx + __root.tsx</div>
+            <pre><code><span class="k">const</span> queryClient = <span class="k">new</span> QueryClient();
+<span class="k">const</span> router = createRouter({
+  routeTree,
+  context: { queryClient },
+});
+
+createRootRouteWithContext&lt;{
+  queryClient: QueryClient
+}&gt;()({ component: … })</code></pre>
+          </div>
+          <div>
+            <div class="cap">lessons/index.tsx</div>
+            <pre><code><span class="k">loader</span>: ({ context }) =&gt;
+  context.queryClient.query({
+    ...collectionsQuery,
+    staleTime: <span class="k">"static"</span>,
+  }),
+
+<span class="c">// in the component</span>
+<span class="k">const</span> collections =
+  useSuspenseQuery(collectionsQuery).data;</code></pre>
+          </div>
+        </div>
+        <ul>
+          <li><strong>The client goes in router context, not an import</strong>, so each test can inject a fresh cache. It's constructor injection, not a static field.</li>
+          <li>The loader still starts the fetch on navigation, so there's no waterfall. <code>"static"</code> returns cached data without blocking.</li>
+          <li><code>useLoaderData()</code> is a snapshot. <code>useSuspenseQuery</code> is a <em>subscription</em>, which is what re-renders when the cache changes.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="beat">
+      <div class="time">3:30<span>45 s</span></div>
+      <div class="body">
+        <h2>Mutations</h2>
+        <pre><code><span class="k">const</span> createMutation = useMutation({
+  mutationFn: (name: string) =&gt; createCollection(name),
+  onSuccess: () =&gt;
+    queryClient.invalidateQueries({ queryKey: collectionsQuery.queryKey }),
+});
+
+&lt;LessonsPage onCreate={createMutation.mutateAsync} … /&gt;</code></pre>
+        <ul>
+          <li><code>onSuccess</code> <strong>returns</strong> the invalidation promise. That keeps the mutation pending until the refetch lands, which is the same job the second <code>await</code> did in stage 1.</li>
+          <li>Pass <code>mutateAsync</code>, not <code>mutate</code>. The page's own <code>await</code> and <code>try/catch</code> keep working unchanged.</li>
+          <li><code>LessonsPage</code> didn't change, and its 4 tests passed untouched. Handlers come in as props.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="beat">
+      <div class="time">4:15<span>45 s</span></div>
+      <div class="body">
+        <h2>What bit us</h2>
+        <div class="traps">
+          <div class="trap">
+            <h3>The cache outlives logout</h3>
+            <p>User B logs in on the same tab, and the <code>"static"</code> loader serves user A's lessons. Fix: <code>queryClient.clear()</code> in <code>handleLogout</code>.</p>
+          </div>
+          <div class="trap">
+            <h3><code>data ?? []</code></h3>
+            <p><code>useQuery</code> types <code>data</code> as possibly undefined. Defaulting it shows "No lessons yet" to someone who has lessons. Use <code>useSuspenseQuery</code> instead.</p>
+          </div>
+          <div class="trap">
+            <h3><code>ensureQueryData</code> is deprecated</h3>
+            <p>In 5.104 the replacement is <code>query({ …, staleTime: "static" })</code>. Most tutorials still show the old call, so check the installed <code>.d.ts</code>.</p>
+          </div>
+          <div class="trap">
+            <h3><code>&lt;Link&gt;</code> needs a router</h3>
+            <p>Taking <code>useRouter</code> out of a page doesn't remove its router dependency. Tests render through a memory-history router.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <section style="margin-top:36px; display:grid; gap:12px;">
+    <h2>Side by side</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Router loader</th><th>TanStack Query</th></tr></thead>
+        <tbody>
+          <tr><td>Cache keyed by</td><td>Route match (URL)</td><td>Query key (data)</td></tr>
+          <tr><td>Invalidate</td><td><code>router.invalidate()</code>: all matched loaders</td><td><code>invalidateQueries({ queryKey })</code>: by prefix, or <code>exact</code></td></tr>
+          <tr><td>Component reads</td><td><code>useLoaderData()</code>, a snapshot</td><td><code>useSuspenseQuery()</code>, a subscription</td></tr>
+          <tr><td>Data shared across routes</td><td>No, each route has its own copy</td><td>Yes, same key means the same entry</td></tr>
+          <tr><td>Background refresh</td><td>Only on navigation</td><td>When stale, on mount, focus and reconnect</td></tr>
+          <tr><td>Logout</td><td>Nothing outlives navigation</td><td>Must call <code>clear()</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section style="margin-top:36px; display:grid; gap:14px;">
+    <h2>If someone asks</h2>
+    <dl class="qa">
+      <div><dt>Why keep the loader at all?</dt><dd>It starts the fetch when navigation begins, before the component mounts. Without it, nested routes fetch one after another, a waterfall.</dd></div>
+      <div><dt>Why one request on load, not two?</dt><dd><code>useSuspenseQuery</code> raises <code>staleTime</code> to at least 1000 ms, so it doesn't refetch right after the loader. Come back a few seconds later and you'll see the background refetch.</dd></div>
+      <div><dt>Why <code>Promise&lt;unknown&gt;</code> on the page props?</dt><dd>The page only awaits and never reads the value. <code>Promise&lt;Collection&gt;</code> isn't assignable to <code>Promise&lt;void&gt;</code>.</dd></div>
+      <div><dt>What's not done yet?</dt><dd>The lesson detail route still uses a plain loader. There's no global 401 handling, so an expired token skips <code>clear()</code>. Still no route-level tests.</dd></div>
+    </dl>
+  </section>
+
+  <footer>Code as of 13 Oct 2026 on <code>feature/migration-to-react</code>. @tanstack/react-router 1.170, @tanstack/react-query 5.104.</footer>
+</div>
